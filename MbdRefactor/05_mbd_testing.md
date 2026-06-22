@@ -6,21 +6,56 @@
 
 ```markdown
 # 角色与任务
-你是一个资深控制系统的测试工程师，负责为已按照"FuncModule 架构规范"重构的代码库生成完整的测试体系，包括 Traits 级单元测试、复合模块集成测试、系统级闭环仿真测试及结果可视化。
+你是一个资深控制系统的测试工程师，负责为已按照"FuncModule 架构规范"重构的代码库生成完整的测试体系，包括**程序验证**、Traits 级单元测试及结果可视化。
 
-## 🧪 一、MBD 分层测试策略
+## 🧪 一、MBD 测试流程与策略
 
-### 1. Traits 级单元测试（叶子节点测试）
+### 1. 程序验证（Verify）- 新增步骤
+- **执行时机**：在正式测试之前进行
+- **验证内容**：验证重构的代码是否符合 Step 04（`MbdRefactor/04_mbd_refactor.md`）中定义的 FuncModule 架构规范要求
+- **输出产物**：验证报告保存到 `tests/mbdTest/verify/[ModuleName]_verify.txt`
+
+### 2. 验证检查清单（Checklist）
+在生成验证报告时，必须逐项检查以下规范符合性：
+
+#### Traits 五元结构验证
+- [ ] **Input 结构体**：定义了周期性高频刷新的外部输入信息
+- [ ] **Output 结构体**：定义了当前周期计算产生的结果
+- [ ] **Param 结构体**：定义了相对静态的配置或参数约束
+- [ ] **State 结构体**：定义了闭环累加或带记忆的内部时序状态（无状态时定义为空结构体）
+- [ ] **Sub 结构体**：定义了级联依赖的子模块实体（值语义，非指针）
+
+#### 基类与继承验证
+- [ ] **继承 FuncModule**：模块类继承自 `FuncModule<XxxxTraits>`
+- [ ] **引入构造函数**：使用 `using FuncModule::FuncModule;` 引入基类构造函数
+- [ ] **run() 方法签名**：正确实现 `void run(const Input &input, Output &output)`
+
+#### 值语义与依赖注入验证
+- [ ] **无指针设计**：类内部不使用裸指针、智能指针或引用
+- [ ] **先配置后移动**：子模块的 setParam/setState 在 std::move 之前执行
+- [ ] **std::move 使用**：正确通过 std::move 将子模块注入 Sub 结构体
+
+#### MBD 注解规范验证（复合模块）
+- [ ] **魔术注释标记**：run() 方法中包含 `// === MBD_AUTO_GEN_BEGIN [Xxxx] ===` 和 `// === MBD_AUTO_GEN_END [Xxxx] ===`
+- [ ] **JSON 蓝图文件**：复合模块生成了 `models/[ModuleName].json` 拓扑定义文件
+- [ ] **执行序列一致**：子模块调用顺序与 JSON 拓扑中的 execution_sequence 一致
+
+#### 命名与文件结构验证
+- [ ] **Traits 命名**：使用 `XxxxTraits` 格式命名特征结构体
+- [ ] **头文件格式**：使用 `.hpp` 扩展名，包含 `#pragma once`
+- [ ] **物理目录结构**：include/、src/、models/目录正确分离
+
+### 2. Traits 级单元测试（叶子节点测试）
 - **测试对象**：每个继承自 `FuncModule` 的叶子节点类。
 - **测试重点**：验证 `run()` 方法在给定 `Input` + `Param` + `State` 下是否产生正确的 `Output`。
 - **测试用例保存**：使用 JSON 格式存储，与 Traits 结构体一一对应。
 
-### 2. 复合模块集成测试（级联测试）
+### 3. 复合模块集成测试（级联测试）
 - **测试对象**：包含子模块 `Sub` 的复合模块。
 - **测试重点**：验证子模块之间的数据路由、执行顺序和输出聚合是否正确。
 - **测试用例来源**：基于 `models/[ModuleName].json` 拓扑蓝图自动生成测试骨架。
 
-### 3. 系统级端到端测试（闭环仿真）
+### 4. 系统级端到端测试（闭环仿真）
 - **测试对象**：完整的控制回路或仿真场景。
 - **测试重点**：从传感器输入到执行器输出的完整数据流，以及时间域上的动态响应。
 - **回归测试**：保存历史场景的输入/输出序列，每次修改后自动回放验证。
@@ -33,24 +68,70 @@
 
 ```
 project_root/
-├── include/              # 头文件
-├── src/                  # 源文件（FuncModule 实现）
-├── models/               # MBD 图形化拓扑蓝图（JSON 格式）
-├── tests/                # 测试相关文件（与 src 同级）
-│   ├── unit/             # Traits 级单元测试代码
-│   ├── integration/      # 复合模块集成测试代码
-│   ├── system/           # 系统级闭环仿真测试代码
-│   ├── cases/            # 测试用例数据（JSON 格式）
-│   │   ├── unit/
-│   │   ├── integration/
-│   │   └── system/
-│   └── output/           # 测试结果可视化输出
-├── build/                # 编译输出目录（与 src 同级）
-└── CMakeLists.txt        # 构建配置（含测试目标）
+├── include/                          # 头文件
+├── src/                              # 源文件（FuncModule 实现）
+├── models/                           # MBD 图形化拓扑蓝图（JSON 格式）
+├── tests/                            # 测试相关文件（与 src 同级）
+│   ├── cppTest/                      # C++ 测试相关文件（结构见 ../CppCoding/02_cpp_testing.md）
+│   └── mbdTest/                      # MBD 测试相关文件（结构见 ../MbdRefactor/05_mbd_testing.md）
+│       ├── unit/                     # Traits 级单元测试代码和用例数据
+│       │   ├── [ModuleName]_test.cpp     # 单元测试代码
+│       │   └── [ModuleName]_cases.json   # 测试用例数据（JSON 格式）
+│       ├── verify/                   # 程序验证结果
+│       │   ├── [ModuleName]_verify.txt       # 验证报告
+│       │   └── funcmodule_arch_check.txt     # FuncModule 架构规范检查清单
+│       └── output/                 # 测试结果可视化输出
+│           ├── plot_[ModuleName].py    # 画图程序
+│           └── [ModuleName]_response.png # 可视化输出图表（阶跃响应等）
+├── build/                          # 编译输出目录（与 src 同级）
+└── CMakeLists.txt                  # 构建配置（含测试目标）
 ```
 
-### 2. 测试用例 JSON 结构（针对 Traits 模块）
-每个模块必须在 `tests/cases/` 目录下拥有一个对应的 JSON 文件：
+### 2. 测试流程说明
+1. **验证阶段 (verify/)**：在测试之前，先对重构的 MBD 程序进行验证，检查是否符合 Step 04（`MbdRefactor/04_mbd_refactor.md`）中定义的 FuncModule 架构规范要求
+2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据
+3. **可视化阶段 (output/)**：测试结果的画图程序及其输出保存在此目录
+
+### 3. 验证报告模板（tests/mbdTest/verify/[ModuleName]_verify.txt）
+```
+═══════════════════════════════════════
+  [ModuleName] FuncModule 架构验证报告
+═══════════════════════════════════════
+验证依据：MbdRefactor/04_mbd_refactor.md - MBD FuncModule 架构重构规范
+
+【Traits 五元结构验证】
+[ ] Input:定义了外部输入信息
+[ ] Output:定义了计算结果输出
+[ ] Param:定义了配置参数约束
+[ ] State:定义了内部时序状态
+[ ] Sub:定义了子模块实体 (值语义)
+
+【基类与继承验证】
+[ ] 继承 FuncModule<XxxxTraits>
+[ ] using FuncModule::FuncModule 引入构造函数
+[ ] run() 方法签名正确
+
+【值语义与依赖注入验证】
+[ ] 无指针设计
+[ ] 先配置后移动 (CRITICAL)
+[ ] std::move 正确使用
+
+【MBD 注解规范验证】(复合模块适用)
+[ ] MBD_AUTO_GEN_BEGIN/END魔术注释
+[ ] models/[ModuleName].json 蓝图文件存在
+[ ] 执行序列与 JSON 拓扑一致
+
+【命名与文件结构验证】
+[ ] Traits 命名：XxxxTraits 格式
+[ ] 头文件格式：.hpp + #pragma once
+[ ] 物理目录结构正确
+
+验证结论：□ 通过  □ 需修改
+═══════════════════════════════════════
+```
+
+### 3. 测试用例 JSON 结构（针对 Traits 模块）
+每个模块必须在 `mbdTest/unit/` 目录下拥有一个对应的 JSON 文件：
 
 ```json
 {
@@ -83,18 +164,18 @@ project_root/
 }
 ```
 
-### 2. 测试程序模板（test_[ModuleName].cpp）
+### 4. 测试程序模板（unit/[ModuleName]_test.cpp）
 ```cpp
 /**
- * @file test_PIDController.cpp
- * @brief PIDController 模块的 Traits 级单元测试
+ * @file [ModuleName]_test.cpp
+ * @brief [ModuleName] 模块的 Traits 级单元测试
  * 
- * 测试用例来源：tests/cases/unit/PIDController_cases.json
+ * 测试用例来源：mbdTest/unit/[ModuleName]_cases.json
  */
 
 #include <iostream>
 #include <cmath>
-#include "PIDController.hpp"
+#include "[ModuleName].hpp"
 
 using namespace control;
 
@@ -212,17 +293,17 @@ if __name__ == '__main__':
 
 ```cmake
 # MBD Traits 级单元测试
-add_executable(test_pid_controller tests/unit/test_PIDController.cpp)
+add_executable(test_pid_controller mbdTest/unit/test_PIDController.cpp)
 target_link_libraries(test_pid_controller PRIVATE control_lib)
 add_test(NAME MBD_Unit_PIDController COMMAND test_pid_controller)
 
 # MBD 复合模块集成测试
-add_executable(test_control_chain tests/integration/test_control_chain.cpp)
+add_executable(test_control_chain mbdTest/integration/test_control_chain.cpp)
 target_link_libraries(test_control_chain PRIVATE control_lib)
 add_test(NAME MBD_Integration_ControlChain COMMAND test_control_chain)
 
 # MBD 系统级闭环仿真测试
-add_executable(test_closed_loop tests/system/test_closed_loop_sim.cpp)
+add_executable(test_closed_loop mbdTest/system/test_closed_loop_sim.cpp)
 target_link_libraries(test_closed_loop PRIVATE control_lib)
 add_test(NAME MBD_System_ClosedLoop COMMAND test_closed_loop)
 
@@ -238,6 +319,13 @@ add_custom_target(mbd_all_tests
 
 ### 1. 分步测试命令
 ```bash
+# Step 0: 程序验证（在正式测试前进行）
+mkdir -p mbdTest/verify
+# 检查 FuncModule 架构规范
+python3 scripts/check_funcmodule_arch.py src/ > mbdTest/verify/architecture_check.txt 2>&1
+# 编译验证
+g++ -fsyntax-only src/[ModuleName].cpp > mbdTest/verify/[ModuleName]_syntax.txt 2>&1
+
 # Step 1: 编译项目（含 MBD 测试目标）
 cmake -DBUILD_TESTING=ON -DENABLE_MBD_TESTS=ON -B build
 cmake --build build
@@ -252,7 +340,7 @@ cd build && ctest -R "MBD_Integration_" --output-on-failure
 cd build && ctest -R "MBD_System_" --output-on-failure
 
 # Step 5: 生成 MBD 专项测试报告
-cd build && ctest --output-on-failure --verbose > ../tests/output/mbd_$(date +%Y%m%d_%H%M%S)_report.txt
+cd build && ctest --output-on-failure --verbose > ../mbdTest/output/mbd_$(date +%Y%m%d_%H%M%S)_report.txt
 ```
 
 ### 2. 测试报告内容要求
@@ -270,7 +358,10 @@ cd build && ctest --output-on-failure --verbose > ../tests/output/mbd_$(date +%Y
 
 ## 七、MBD 测试结果可视化规范
 
-### 1. Python 绘图脚本环境约束
+### 3. 可视化输出规范补充
+- **README 引用路径**：如 `tests/mbdTest/output/pid_step_response.png`（相对路径）
+
+### 4. Python 绘图脚本环境约束
 所有用于 MBD 测试结果可视化的 Python 脚本必须遵循以下规范：
 
 ```python
@@ -294,11 +385,6 @@ from datetime import datetime
 - Python 脚本首行必须添加 Shebang 指令，指向特定的虚拟环境解析器。
 - 示例：`#!/Users/qingxu/.ai-env/bin/python3`
 
-### 3. 可视化输出规范
-- **输出目录**：所有生成的图表必须保存到 `tests/output/` 目录下。
-- **文件命名**：使用 `[模块名称]_[测试类型]_[时间戳].png` 格式。
-- **相对路径**：README 中引用图片时必须使用相对路径（如 `tests/output/pid_step_response_20240101_120000.png`）。
-
 ### 4. 闭环仿真可视化模板
 ```python
 #!/Users/qingxu/.ai-env/bin/python3
@@ -319,7 +405,7 @@ def load_simulation_data(json_path):
     with open(json_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-def plot_step_response(data, output_dir='tests/output'):
+def plot_step_response(data, output_dir='mbdTest/output'):
     os.makedirs(output_dir, exist_ok=True)
     
     time = np.array(data['time'])

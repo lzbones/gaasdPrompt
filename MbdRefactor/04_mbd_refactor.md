@@ -127,14 +127,11 @@ project_root/
 ├── src/                  # 源文件（FuncModule 实现）
 ├── models/               # MBD 图形化拓扑蓝图（JSON 格式）
 ├── tests/                # 测试相关文件（与 src 同级）
-│   ├── unit/             # Traits 级单元测试代码
-│   ├── integration/      # 复合模块集成测试代码
-│   ├── system/           # 系统级闭环仿真测试代码
-│   ├── cases/            # 测试用例数据（JSON 格式）
-│   │   ├── unit/
-│   │   ├── integration/
-│   │   └── system/
-│   └── output/           # 测试结果可视化输出
+│   ├── cppTest/          # C++ 测试相关文件（如适用）
+│   └── mbdTest/          # MBD 测试相关文件
+│       ├── unit/         # Traits 级单元测试代码和用例数据
+│       ├── verify/       # 程序验证结果
+│       └── output/       # 测试结果可视化输出
 ├── build/                # 编译输出目录（与 src 同级）
 └── CMakeLists.txt        # 构建配置（含测试目标）
 ```

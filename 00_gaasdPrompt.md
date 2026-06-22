@@ -8,11 +8,11 @@
 
 请在以下步骤前勾选（`[x]`）你需要执行的环节，未勾选的将跳过：
 
-- [x] **Step 01 — C++ 代码改写** · `prompt/Modify/01_cpp_coding.md`
-- [ ] **Step 02 — C++ 测试生成** · `prompt/Modify/02_cpp_testing.md`
-- [ ] **Step 03 — 函数设计文档生成** · `prompt/Design/03_design_doc_gen.md`
-- [ ] **Step 04 — MBD 架构重构** · `prompt/Modify/04_mbd_refactor.md`
-- [ ] **Step 05 — MBD 测试验证** · `prompt/Modify/05_mbd_testing.md`
+- [x] **Step 01 — C++ 代码改写** · `CppCoding/01_cpp_coding.md`
+- [ ] **Step 02 — C++ 测试生成** · `CppCoding/02_cpp_testing.md`
+- [ ] **Step 03 — 函数设计文档生成** · `CppDesign/03_design_doc_gen.md`
+- [ ] **Step 04 — MBD 架构重构** · `MbdRefactor/04_mbd_refactor.md`
+- [ ] **Step 05 — MBD 测试验证** · `MbdRefactor/05_mbd_testing.md`
 
 > **说明**：Step 01 默认勾选作为起点。后续步骤依赖前一步的输出结果，请按序号顺序执行。
 
@@ -43,32 +43,41 @@
 | 步骤 | 输入来源 | 输出产物 |
 |------|----------|----------|
 | **01** C++ 改写 | 用户原始 C++ 代码 | 面向过程规范的 C++ 代码 |
-| **02** C++ 测试 | Step 01 输出的代码 | 测试用例 + 测试报告 |
+| **02** C++ 测试 | Step 01 输出的代码 | `tests/cppTest/` - 验证报告 (verify/)、单元测试 (unit/)、可视化输出 (output/) |
 | **03** 设计文档 | Step 01 输出的代码 | doc/ 目录下的 .tex + .pdf |
 | **04** MBD 重构 | Step 01 输出的代码 | FuncModule 架构 C++ 代码 |
-| **05** MBD 测试 | Step 04 输出的代码 | MBD 测试用例 + 验证报告 |
+| **05** MBD 测试 | Step 04 输出的代码 | `tests/mbdTest/` - 验证报告 (verify/)、单元测试 (unit/)、可视化输出 (output/) |
 
 ### 3. 目录约定
 
 ```
 项目根目录/
-├── src/                # 原始 C/C++ 源代码
+├── src/                      # 原始 C/C++ 源代码
 │   └── .../
-├── include/            # 头文件
+├── include/                  # 头文件
 │   └── .../
-├── doc/                # 设计文档输出（与 src/ 子目录结构一致）
+├── doc/                      # 设计文档输出（与 src/ 子目录结构一致）
 │   └── .../
-├── prompt/             # 存放所有 Prompt 模板文件
-│   ├── 00_gaasdPrompt.md       # gaasdPrompt 全流程编排 Prompt
-│   ├── Design/
-│   │   └── 03_design_doc_gen.md    # 设计文档 Prompt 模板
-│   └── Modify/
-│       ├── 01_cpp_coding.md        # C++ 改写 Prompt 模板
-│       ├── 02_cpp_testing.md       # C++ 测试 Prompt 模板
-│       ├── 04_mbd_refactor.md      # MBD 重构 Prompt 模板
-│       └── 05_mbd_testing.md       # MBD 测试 Prompt 模板
-└── script/             # 存放编译、修正等各类脚本
-    └── compile_latex.py        # LaTeX 编译、自动修正与清理脚本
+├── tests/                    # 测试相关文件（与 src/同级）
+│   ├── cppTest/              # C++ 测试相关文件
+│   │   ├── unit/             # 单元测试代码和用例数据
+│   │   ├── verify/           # 程序验证结果
+│   │   └── output/           # 测试结果可视化输出
+│   └── mbdTest/              # MBD 测试相关文件
+│       ├── unit/             # Traits 级单元测试代码和用例数据
+│       ├── verify/           # 程序验证结果
+│       └── output/           # 测试结果可视化输出
+├── CppCoding/                # C++ 代码改写与测试 Prompt
+│   ├── 01_cpp_coding.md      # C++ 面向过程代码改写规范
+│   └── 02_cpp_testing.md     # C++ 测试生成与验证规范
+├── CppDesign/                # 设计文档生成 Prompt
+│   └── 03_design_doc_gen.md  # LaTeX 格式函数设计文档生成
+├── MbdRefactor/              # MBD 重构与测试 Prompt
+│   ├── 04_mbd_refactor.md    # FuncModule 架构重构规范
+│   └── 05_mbd_testing.md     # MBD 测试生成与验证规范
+├── script/                   # 存放编译、修正等各类脚本
+│   └── compile_latex.py      # LaTeX 编译、自动修正与清理脚本
+└── 00_gaasdPrompt.md         # gaasdPrompt 全流程编排 Prompt（本文件）
 ```
 
 ### 4. 执行模式
@@ -94,7 +103,7 @@
 
 ```
 for each step in [勾选的步骤序列]:
-    1. 读取 prompt/Modify/ 或 prompt/Design/ 下对应的 .md 文件
+    1. 读取 CppCoding/、CppDesign/ 或 MbdRefactor/ 下对应的 .md 文件
     2. 提取 ```markdown 代码块内的 Prompt 内容
     3. 加载该 Prompt 作为系统指令
     4. 使用上一步的输出作为当前步的输入（Step 01 使用用户提供的原始代码）
@@ -115,10 +124,16 @@ for each step in [勾选的步骤序列]:
 
 输出产物：
   📄 改写后代码：   src/xxx.c (Step 01)
-  🧪 测试报告：     test/report.html (Step 02)
+  🧪 C++ 测试：     tests/cppTest/
+                    ├── unit/[Function]_test.cpp, [Function]_cases.json
+                    ├── verify/[Function]_verify.txt
+                    └── output/[Function]_plot.png (Step 02)
   📝 设计文档：     doc/xxx/xxx.pdf (Step 03)
   🔧 MBD 代码：     src/mbd/xxx.cpp (Step 04)
-  ✅ MBD 测试报告：  test/mbd_report.html (Step 05)
+  ✅ MBD 测试：     tests/mbdTest/
+                    ├── unit/[Module]_test.cpp, [Module]_cases.json
+                    ├── verify/[Module]_verify.txt
+                    └── output/[Module]_response.png (Step 05)
 
 状态：全部成功 ✅
 ═══════════════════════════════════════
@@ -130,17 +145,17 @@ for each step in [勾选的步骤序列]:
 
 | 步骤 | 文件路径（相对项目根目录） |
 |------|--------------------------|
-| Step 01 | `prompt/Modify/01_cpp_coding.md` |
-| Step 02 | `prompt/Modify/02_cpp_testing.md` |
-| Step 03 | `prompt/Design/03_design_doc_gen.md` |
-| Step 04 | `prompt/Modify/04_mbd_refactor.md` |
-| Step 05 | `prompt/Modify/05_mbd_testing.md` |
+| Step 01 | `CppCoding/01_cpp_coding.md` |
+| Step 02 | `CppCoding/02_cpp_testing.md` |
+| Step 03 | `CppDesign/03_design_doc_gen.md` |
+| Step 04 | `MbdRefactor/04_mbd_refactor.md` |
+| Step 05 | `MbdRefactor/05_mbd_testing.md` |
 
 ---
 
 ## ⚠️ 注意事项
 
-1. **文件读取权限**：确保你有读取 `prompt/Modify/` 和 `prompt/Design/` 目录下 .md 文件的权限
+1. **文件读取权限**：确保你有读取 `CppCoding/`、`CppDesign/` 和 `MbdRefactor/` 目录下 .md 文件的权限
 2. **源代码位置**：用户的 C/C++ 源代码默认位于 `src/` 目录下（或由用户指定路径）
 3. **设计文档输出**：Step 03 输出的 .tex 和 .pdf 文件位于 `doc/` 目录，子目录结构与 `src/` 保持一致
 4. **编译环境**：Step 03 需要 xelatex 和 TeX Live/MacTeX 环境
