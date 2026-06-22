@@ -11,7 +11,7 @@
 ## 一、分层测试策略
 
 ### 1. 函数级单元测试（Unit Test）
-- **一对一原则**：每个源文件（`src/[FunctionName].cpp`）对应一个测试文件（`test/unit/test_[FunctionName].cpp`）。
+- **一对一原则**：每个源文件（`src/[FunctionName].cpp`）对应一个测试文件（`tests/unit/test_[FunctionName].cpp`）。
 - **测试覆盖要求**：每个函数的所有分支路径必须有对应的测试用例。
 - **断言验证**：使用 `assert()` 或测试框架的断言宏验证输出符合预期。
 
@@ -30,15 +30,16 @@
 project_root/
 ├── include/              # 头文件
 ├── src/                  # 源文件（One Function Per File）
-├── test/                 # 测试代码
-│   ├── unit/             # 函数级单元测试
-│   ├── integration/      # 模块级集成测试
-│   └── system/           # 程序级系统测试
-├── test_cases/           # 测试用例数据（JSON 格式）
-│   ├── unit/
-│   ├── integration/
-│   └── system/
-├── output/               # 测试结果可视化输出
+├── tests/                # 测试相关文件（与 src 同级）
+│   ├── unit/             # 函数级单元测试代码
+│   ├── integration/      # 模块级集成测试代码
+│   ├── system/           # 程序级系统测试代码
+│   ├── cases/            # 测试用例数据（JSON 格式）
+│   │   ├── unit/
+│   │   ├── integration/
+│   │   └── system/
+│   └── output/           # 测试结果可视化输出
+├── build/                # 编译输出目录（与 src 同级）
 └── CMakeLists.txt        # 构建配置（含测试目标）
 ```
 
@@ -87,13 +88,13 @@ project_root/
  * @file test_calculateAcceleration.cpp
  * @brief calculateAcceleration 函数的单元测试
  * 
- * 测试用例来源：test_cases/unit/calculateAcceleration_cases.json
+ * 测试用例来源：tests/cases/unit/calculateAcceleration_cases.json
  */
 
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include "../src/calculateAcceleration.cpp"
+#include "../../src/calculateAcceleration.cpp"
 
 struct TestCase {
     const char* id;
@@ -156,16 +157,16 @@ int main() {
 enable_testing()
 
 # 单元测试目标
-add_executable(test_calculateAcceleration test/unit/test_calculateAcceleration.cpp)
+add_executable(test_calculateAcceleration tests/unit/test_calculateAcceleration.cpp)
 target_link_libraries(test_calculateAcceleration PRIVATE ${PROJECT_NAME}_lib)
 add_test(NAME Unit_CalculateAcceleration COMMAND test_calculateAcceleration)
 
 # 集成测试目标
-add_executable(test_physics_module test/integration/test_physics_module.cpp)
+add_executable(test_physics_module tests/integration/test_physics_module.cpp)
 add_test(NAME Integration_PhysicsModule COMMAND test_physics_module)
 
 # 系统测试目标
-add_executable(test_system test/system/test_main.cpp)
+add_executable(test_system tests/system/test_main.cpp)
 add_test(NAME System_FullFlow COMMAND test_system)
 
 # 自定义测试目标：运行所有测试
@@ -194,7 +195,7 @@ cd build && ctest -R Integration_ --output-on-failure
 cd build && ctest -R System_ --output-on-failure
 
 # Step 5: 生成详细测试报告
-cd build && ctest --output-on-failure --verbose > ../test_results/$(date +%Y%m%d_%H%M%S)_report.txt
+cd build && ctest --output-on-failure --verbose > ../tests/output/$(date +%Y%m%d_%H%M%S)_report.txt
 ```
 
 ### 2. 测试覆盖率要求
@@ -229,9 +230,9 @@ from datetime import datetime
 - 示例：`#!/Users/qingxu/.ai-env/bin/python3`
 
 ### 3. 可视化输出规范
-- **输出目录**：所有生成的图表必须保存到 `output/` 目录下。
+- **输出目录**：所有生成的图表必须保存到 `tests/output/` 目录下。
 - **文件命名**：使用 `[测试名称]_[时间戳].png` 格式。
-- **相对路径**：README 中引用图片时必须使用相对路径（如 `output/simulation_plot.png`）。
+- **相对路径**：README 中引用图片时必须使用相对路径（如 `tests/output/simulation_plot.png`）。
 
 ### 4. 可视化脚本模板
 ```python
@@ -251,7 +252,7 @@ def load_test_cases(json_path):
     with open(json_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-def plot_comparison(test_data, output_dir='output'):
+def plot_comparison(test_data, output_dir='tests/output'):
     os.makedirs(output_dir, exist_ok=True)
     
     # 提取数据
@@ -270,7 +271,7 @@ def plot_comparison(test_data, output_dir='output'):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 2:
-        print("Usage: python plot_tests.py test_cases/unit/[function]_cases.json")
+        print("Usage: python plot_tests.py tests/cases/unit/[function]_cases.json")
         sys.exit(1)
     
     test_data = load_test_cases(sys.argv[1])

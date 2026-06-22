@@ -27,8 +27,30 @@
 
 ## 二、MBD 测试用例管理规范
 
-### 1. 测试用例 JSON 结构（针对 Traits 模块）
-每个模块必须在 `test_cases/` 目录下拥有一个对应的 JSON 文件：
+### 1. 物理目录结构规范
+
+在开始测试之前，请确保项目遵循以下目录结构：
+
+```
+project_root/
+├── include/              # 头文件
+├── src/                  # 源文件（FuncModule 实现）
+├── models/               # MBD 图形化拓扑蓝图（JSON 格式）
+├── tests/                # 测试相关文件（与 src 同级）
+│   ├── unit/             # Traits 级单元测试代码
+│   ├── integration/      # 复合模块集成测试代码
+│   ├── system/           # 系统级闭环仿真测试代码
+│   ├── cases/            # 测试用例数据（JSON 格式）
+│   │   ├── unit/
+│   │   ├── integration/
+│   │   └── system/
+│   └── output/           # 测试结果可视化输出
+├── build/                # 编译输出目录（与 src 同级）
+└── CMakeLists.txt        # 构建配置（含测试目标）
+```
+
+### 2. 测试用例 JSON 结构（针对 Traits 模块）
+每个模块必须在 `tests/cases/` 目录下拥有一个对应的 JSON 文件：
 
 ```json
 {
@@ -67,7 +89,7 @@
  * @file test_PIDController.cpp
  * @brief PIDController 模块的 Traits 级单元测试
  * 
- * 测试用例来源：test_cases/PIDController_cases.json
+ * 测试用例来源：tests/cases/unit/PIDController_cases.json
  */
 
 #include <iostream>
@@ -190,17 +212,17 @@ if __name__ == '__main__':
 
 ```cmake
 # MBD Traits 级单元测试
-add_executable(test_pid_controller test/unit/test_PIDController.cpp)
+add_executable(test_pid_controller tests/unit/test_PIDController.cpp)
 target_link_libraries(test_pid_controller PRIVATE control_lib)
 add_test(NAME MBD_Unit_PIDController COMMAND test_pid_controller)
 
 # MBD 复合模块集成测试
-add_executable(test_control_chain test/integration/test_control_chain.cpp)
+add_executable(test_control_chain tests/integration/test_control_chain.cpp)
 target_link_libraries(test_control_chain PRIVATE control_lib)
 add_test(NAME MBD_Integration_ControlChain COMMAND test_control_chain)
 
 # MBD 系统级闭环仿真测试
-add_executable(test_closed_loop test/system/test_closed_loop_sim.cpp)
+add_executable(test_closed_loop tests/system/test_closed_loop_sim.cpp)
 target_link_libraries(test_closed_loop PRIVATE control_lib)
 add_test(NAME MBD_System_ClosedLoop COMMAND test_closed_loop)
 
@@ -230,7 +252,7 @@ cd build && ctest -R "MBD_Integration_" --output-on-failure
 cd build && ctest -R "MBD_System_" --output-on-failure
 
 # Step 5: 生成 MBD 专项测试报告
-cd build && ctest --output-on-failure --verbose > ../test_results/mbd_$(date +%Y%m%d_%H%M%S)_report.txt
+cd build && ctest --output-on-failure --verbose > ../tests/output/mbd_$(date +%Y%m%d_%H%M%S)_report.txt
 ```
 
 ### 2. 测试报告内容要求
@@ -273,9 +295,9 @@ from datetime import datetime
 - 示例：`#!/Users/qingxu/.ai-env/bin/python3`
 
 ### 3. 可视化输出规范
-- **输出目录**：所有生成的图表必须保存到 `output/` 目录下。
+- **输出目录**：所有生成的图表必须保存到 `tests/output/` 目录下。
 - **文件命名**：使用 `[模块名称]_[测试类型]_[时间戳].png` 格式。
-- **相对路径**：README 中引用图片时必须使用相对路径（如 `output/pid_step_response_20240101_120000.png`）。
+- **相对路径**：README 中引用图片时必须使用相对路径（如 `tests/output/pid_step_response_20240101_120000.png`）。
 
 ### 4. 闭环仿真可视化模板
 ```python
@@ -297,7 +319,7 @@ def load_simulation_data(json_path):
     with open(json_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-def plot_step_response(data, output_dir='output'):
+def plot_step_response(data, output_dir='tests/output'):
     os.makedirs(output_dir, exist_ok=True)
     
     time = np.array(data['time'])

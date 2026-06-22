@@ -119,6 +119,27 @@ void Func1::run(const Input &input, Output &output) {
 - **级联子模块实例** → `Sub` 结构体
 
 ### 3. 生成符合规范的目录与文件
+
+#### 物理目录结构规范
+```
+project_root/
+├── include/              # 头文件
+├── src/                  # 源文件（FuncModule 实现）
+├── models/               # MBD 图形化拓扑蓝图（JSON 格式）
+├── tests/                # 测试相关文件（与 src 同级）
+│   ├── unit/             # Traits 级单元测试代码
+│   ├── integration/      # 复合模块集成测试代码
+│   ├── system/           # 系统级闭环仿真测试代码
+│   ├── cases/            # 测试用例数据（JSON 格式）
+│   │   ├── unit/
+│   │   ├── integration/
+│   │   └── system/
+│   └── output/           # 测试结果可视化输出
+├── build/                # 编译输出目录（与 src 同级）
+└── CMakeLists.txt        # 构建配置（含测试目标）
+```
+
+#### 文件说明
 - **`include/[ModuleName].hpp`**：包含 Traits 五元结构体和类声明。
 - **`src/[ModuleName].cpp`**：包含 `run()` 等算法实现。
 - **`models/[ModuleName].json`**：（仅复合模块）定义图形化拓扑蓝图。
