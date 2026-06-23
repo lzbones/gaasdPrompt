@@ -15,6 +15,10 @@
 - **验证内容**：验证改写的代码是否符合 Step 01（`CppCoding/01_cpp_coding.md`）中定义的面向过程规范要求
 - **输出产物**：验证报告保存到 `tests/cppTest/verify/[FunctionName]_verify.txt`
 
+### 2. C++ 代码目录规范
+- **头文件位置**: `include/cpp/[FunctionName].hpp`
+- **源文件位置**: `src/cpp/[FunctionName].cpp`
+
 ### 2. 验证检查清单（Checklist）
 在生成验证报告时，必须逐项检查以下规范符合性：
 
@@ -64,7 +68,11 @@
 ```
 project_root/
 ├── include/                          # 头文件
-├── src/                              # 源文件（One Function Per File）
+│   ├── cpp/                          # 普通 C++ 头文件
+│   └── mbd/                          # MBD FuncModule 架构头文件
+├── src/                              # 源文件
+│   ├── cpp/                          # 普通 C++ 源代码（One Function Per File）
+│   └── mbd/                          # MBD FuncModule 架构代码
 ├── tests/                            # 测试相关文件（与 src 同级）
 │   ├── cppTest/                      # C++ 测试相关文件
 │   │   ├── unit/                     # 函数级单元测试代码和用例数据

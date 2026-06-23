@@ -37,8 +37,8 @@ CppCoding/
 | 头文件保护 | `#pragma once` |
 
 ### 输出产物
-- 改写后的 C++ 源代码（`src/` 目录）
-- 头文件（`include/` 目录）
+- 改写后的 C++ 源代码：`src/cpp/[FunctionName].cpp`
+- 头文件：`include/cpp/[FunctionName].hpp`
 
 ---
 
@@ -72,6 +72,10 @@ tests/cppTest/
 └── output/                 # 可视化输出和画图程序
     ├── plot_[Function].py
     └── [Function]_plot.png
+
+源代码位置：
+- src/cpp/[FunctionName].cpp      # 源文件
+- include/cpp/[FunctionName].hpp  # 头文件
 ```
 
 ---

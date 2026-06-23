@@ -124,10 +124,14 @@ void Func1::run(const Input &input, Output &output) {
 ```
 project_root/
 ├── include/              # 头文件
-├── src/                  # 源文件（FuncModule 实现）
+│   ├── cpp/              # 普通 C++ 头文件
+│   └── mbd/              # MBD FuncModule 架构头文件
+├── src/                  # 源文件
+│   ├── cpp/              # 普通 C++ 源代码
+│   └── mbd/              # MBD FuncModule 架构代码
 ├── models/               # MBD 图形化拓扑蓝图（JSON 格式）
 ├── tests/                # 测试相关文件（与 src 同级）
-│   ├── cppTest/          # C++ 测试相关文件（如适用）
+│   ├── cppTest/          # C++ 测试相关文件
 │   └── mbdTest/          # MBD 测试相关文件
 │       ├── unit/         # Traits 级单元测试代码和用例数据
 │       ├── verify/       # 程序验证结果
@@ -137,8 +141,8 @@ project_root/
 ```
 
 #### 文件说明
-- **`include/[ModuleName].hpp`**：包含 Traits 五元结构体和类声明。
-- **`src/[ModuleName].cpp`**：包含 `run()` 等算法实现。
+- **`include/mbd/[ModuleName].hpp`**：包含 Traits 五元结构体和类声明。
+- **`src/mbd/[ModuleName].cpp`**：包含 `run()` 等算法实现。
 - **`models/[ModuleName].json`**：（仅复合模块）定义图形化拓扑蓝图。
 
 ### 4. 确保初始化生命周期正确

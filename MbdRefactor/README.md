@@ -49,8 +49,8 @@ void Xxxx::run(const Input &input, Output &output) {
 ```
 
 ### 输出产物
-- `include/[ModuleName].hpp` - Traits 五元结构体和类声明
-- `src/[ModuleName].cpp` - run() 等算法实现
+- `include/mbd/[ModuleName].hpp` - Traits 五元结构体和类声明
+- `src/mbd/[ModuleName].cpp` - run() 等算法实现
 - `models/[ModuleName].json` - （仅复合模块）图形化拓扑蓝图
 
 ---
@@ -86,6 +86,11 @@ tests/mbdTest/
 └── output/                 # 可视化输出和画图程序
     ├── plot_[Module].py
     └── [Module]_response.png
+
+源代码位置：
+- src/mbd/[ModuleName].cpp      # 源文件
+- include/mbd/[ModuleName].hpp  # 头文件
+- models/[ModuleName].json      # MBD 拓扑蓝图（仅复合模块）
 ```
 
 ---

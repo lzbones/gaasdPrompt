@@ -15,6 +15,10 @@
 - **验证内容**：验证重构的代码是否符合 Step 04（`MbdRefactor/04_mbd_refactor.md`）中定义的 FuncModule 架构规范要求
 - **输出产物**：验证报告保存到 `tests/mbdTest/verify/[ModuleName]_verify.txt`
 
+### 2. MBD 代码目录规范
+- **头文件位置**: `include/mbd/[ModuleName].hpp`
+- **源文件位置**: `src/mbd/[ModuleName].cpp`
+
 ### 2. 验证检查清单（Checklist）
 在生成验证报告时，必须逐项检查以下规范符合性：
 
@@ -69,7 +73,11 @@
 ```
 project_root/
 ├── include/                          # 头文件
-├── src/                              # 源文件（FuncModule 实现）
+│   ├── cpp/                          # 普通 C++ 头文件
+│   └── mbd/                          # MBD FuncModule 架构头文件
+├── src/                              # 源文件
+│   ├── cpp/                          # 普通 C++ 源代码
+│   └── mbd/                          # MBD FuncModule 架构代码
 ├── models/                           # MBD 图形化拓扑蓝图（JSON 格式）
 ├── tests/                            # 测试相关文件（与 src 同级）
 │   ├── cppTest/                      # C++ 测试相关文件（结构见 ../CppCoding/02_cpp_testing.md）

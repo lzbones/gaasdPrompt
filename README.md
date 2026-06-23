@@ -38,17 +38,17 @@
 
 ### CppCoding/
 包含 C++ 面向过程代码改写和测试生成的 Prompt 模板。
-- **01_cpp_coding.md**: 定义面向过程编程规范（SSA、单一出口原则等）
-- **02_cpp_testing.md**: 生成单元测试、验证报告和可视化脚本
+- **01_cpp_coding.md**: 定义面向过程编程规范（SSA、单一出口原则等），输出到 `src/cpp/`, `include/cpp/`
+- **02_cpp_testing.md**: 生成单元测试、验证报告和可视化脚本，输出到 `tests/cppTest/`
 
 ### CppDesign/
 包含 LaTeX 格式函数设计文档生成的 Prompt 模板。
-- **03_design_doc_gen.md**: 根据源代码自动生成符合企业规范的 LaTeX 设计文档
+- **03_design_doc_gen.md**: 根据源代码自动生成符合企业规范的 LaTeX 设计文档，输出到 `doc/`
 
 ### MbdRefactor/
 包含 MBD FuncModule 架构重构和测试的 Prompt 模板。
-- **04_mbd_refactor.md**: 将原始 C++ 代码重构为 C++20 FuncModule 架构
-- **05_mbd_testing.md**: 为 FuncModule 架构代码生成测试用例和验证报告
+- **04_mbd_refactor.md**: 将原始 C++ 代码重构为 C++20 FuncModule 架构，输出到 `src/mbd/`, `include/mbd/`, `models/`
+- **05_mbd_testing.md**: 为 FuncModule 架构代码生成测试用例和验证报告，输出到 `tests/mbdTest/`
 
 ## 📝 输出产物说明
 
@@ -56,19 +56,25 @@
 
 ```
 project_root/
-├── src/                          # 改写后的 C++ 源代码
-├── include/                      # 头文件
-├── doc/                          # LaTeX 设计文档 (.tex + .pdf)
+├── src/                          # 源代码目录
+│   ├── cpp/                      # 普通 C++ 源代码（One Function Per File）
+│   └── mbd/                      # MBD FuncModule 架构代码
+├── include/                      # 头文件目录
+│   ├── cpp/                      # 普通 C++ 头文件
+│   └── mbd/                      # MBD FuncModule 架构头文件
+├── models/                       # MBD 拓扑蓝图（仅 MBD 模块）
+│   └── [ModuleName].json
 ├── tests/                        # 测试相关文件
 │   ├── cppTest/                  # C++ 测试结果
 │   │   ├── unit/                 # 单元测试代码和用例数据
 │   │   ├── verify/               # 程序验证结果
 │   │   └── output/               # 可视化输出图表
 │   └── mbdTest/                  # MBD 测试结果
-│       ├── unit/                 # Traits 级单元测试
+│       ├── unit/                 # Traits 级单元测试代码和用例数据
 │       ├── verify/               # 架构规范验证结果
 │       └── output/               # 可视化输出图表
-└── models/                       # MBD 拓扑蓝图 (JSON)
+├── doc/                          # LaTeX 设计文档 (.tex + .pdf)
+└── build/                        # 编译输出目录
 ```
 
 ## ⚠️ 环境要求
@@ -80,3 +86,9 @@ project_root/
 ## 📖 更多信息
 
 详细的使用说明和注意事项请参阅 `00_gaasdPrompt.md` 文件。
+
+**目录结构说明**：
+- 普通 C++ 代码和 MBD 架构代码是分离存放的
+- 源代码：`src/cpp/`（普通 C++）vs `src/mbd/`（MBD）
+- 头文件：`include/cpp/`（普通 C++）vs `include/mbd/`（MBD）
+- 测试文件：`tests/cppTest/`（C++ 测试）vs `tests/mbdTest/`（MBD 测试）
