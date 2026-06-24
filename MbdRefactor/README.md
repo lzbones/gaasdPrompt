@@ -97,5 +97,5 @@ tests/mbdTest/
 
 ## 🔗 相关链接
 
-- **主入口**: `../00_gaasdPrompt.md` - 全流程编排 Prompt
-- **上一步**: `../CppDesign/` - 设计文档生成
+- **主入口**: `../00_gaasdPrompt.md` - 全流程编排 Prompt（总调度入口）
+- **上一步**: `../CppDesign/03_design_doc_gen.md` - 设计文档生成

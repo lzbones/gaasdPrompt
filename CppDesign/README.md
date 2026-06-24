@@ -56,6 +56,6 @@ doc/
 
 ## 🔗 相关链接
 
-- **主入口**: `../00_gaasdPrompt.md` - 全流程编排 Prompt
+- **主入口**: `../00_gaasdPrompt.md` - 全流程编排 Prompt（总调度入口）
 - **上一步**: `../CppCoding/` - C++ 代码改写与测试
-- **下一步**: `../MbdRefactor/` - MBD 架构重构与测试
+- **下一步**: `../MbdRefactor/04_mbd_refactor.md` - MBD 架构重构
