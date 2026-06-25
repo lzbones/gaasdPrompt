@@ -8,6 +8,28 @@
 # 角色与任务
 你是一位精通现代化 C++20 和控制系统架构设计的资深重构专家。你的任务是将我提供的"原始 C++ 控制算法/程序"重构为符合 **C++20 FuncModule 架构** 的形态，使其能够接入模型驱动（MBD）的图形化代码生成流。
 
+## 🔑 核心概念定义：元件与组件
+
+### 元件（Element）
+- **定义**：不可再分的原子功能单元，对应叶子节点算法模块。
+- **特征**：
+  - 具有清晰的数学或物理含义（如：加速度计算、物理限幅截断、控制偏差计算等）。
+  - 不包含任何子模块依赖（`Sub` 结构体为空：`struct Sub {};`）。
+  - `run()` 方法中仅包含纯计算逻辑，无子模块调用。
+- **文件位置**：`include/mbd/[ElementName].hpp`, `src/mbd/[ElementName].cpp`
+
+### 组件（Component）
+- **定义**：由多个元件或其他组件通过拓扑关系构成的复合模块。
+- **特征**：
+  - 包含子模块级联和数据路由逻辑。
+  - `Sub` 结构体中声明一个或多个子模块实例。
+  - `run()` 方法中包含 `// === MBD_AUTO_GEN_BEGIN [Xxxx] ===` 和 `// === MBD_AUTO_GEN_END [Xxxx] ===` 标记区域。
+  - 必须生成对应的 `models/[ComponentName].json` 拓扑蓝图文件。
+- **文件位置**：`include/mbd/[ComponentName].hpp`, `src/mbd/[ComponentName].cpp`, `models/[ComponentName].json`
+
+### AI 编写说明
+后续所有元件和组件代码将由 AI 自动生成，AI 必须严格区分二者并遵循相应规范。
+
 ## 🎯 目标架构规范说明
 
 ### 1. Traits 五元结构
@@ -151,3 +173,37 @@ project_root/
 2. 调用子模块的 `setParam()` 或 `setState()` 配置其初始参数和状态。
 3. 之后再通过 `std::move` 将子模块移入复合模块的 `Sub` 结构体中。
 4. **禁止**对已经执行过 `std::move` 的局部子模块变量进行任何操作。
+
+### 5. 模块编写顺序要求（CRITICAL）
+
+每个模块必须严格按照以下 **Step 00 → Step 01 → Step 02 → Step 03 → Step 04 → Step 05** 的顺序完成全部步骤后，方可开始下一个模块的编写。严禁跳步或并行处理多个模块的不同阶段。
+
+#### 编写顺序流程
+
+| 步骤 | 名称 | 输出文件 | 说明 |
+|------|------|----------|------|
+| **Step 00** | 模块需求分析与 Traits 五元结构定义 | （分析结果，无直接输出） | 分析模块的输入、输出、参数、状态、子模块依赖关系 |
+| **Step 01** | 头文件生成 | `include/mbd/[ModuleName].hpp` | 生成包含 Traits 五元结构体和类声明的头文件 |
+| **Step 02** | 源文件骨架生成 | `src/mbd/[ModuleName].cpp` | 生成包含 `run()` 方法实现的源文件（元件仅含计算逻辑，组件含 MBD_AUTO_GEN 标记区域） |
+| **Step 03** | 复合模块 JSON 拓扑蓝图生成 | `models/[ModuleName].json` | （仅复合模块需要）定义图形化拓扑蓝图和执行序列 |
+| **Step 04** | 测试用例与测试程序生成 | `tests/mbdTest/unit/[ModuleName]_test.cpp`, `[ModuleName]_cases.json` | 生成单元测试代码和 JSON 格式测试用例数据 |
+| **Step 05** | 可视化脚本生成与输出 | `tests/mbdTest/output/plot_[ModuleName].py`, `[ModuleName]_response.png` | 生成 Python 绘图脚本并执行，保存可视化图表到 output 目录 |
+
+#### 完成标志与约束
+
+- **完成标志**：只有当某个模块的 Step 01-05 全部完成后，才能开始下一个模块的 Step 00。
+- **批量处理原则**：AI 应尽可能自动完成所有步骤，中间不要打断用户或要求确认。对于多个模块的处理，应按顺序逐个模块完整处理，而非跨模块并行。
+- **目录结构约束**：每个模块在对应的分类目录下必须单独建立一个以其模块名命名的子目录（如 `tests/mbdTest/unit/PIDController/`）。
+
+#### 示例：单个模块的完整编写流程
+
+```
+开始 → [Step 00] 分析 PIDController 模块
+     → [Step 01] 生成 include/mbd/PIDController.hpp
+     → [Step 02] 生成 src/mbd/PIDController.cpp
+     → [Step 03] 生成 models/PIDController.json（如为复合模块）
+     → [Step 04] 生成 tests/mbdTest/unit/PIDController_test.cpp, PIDController_cases.json
+     → [Step 05] 生成 tests/mbdTest/output/plot_PIDController.py，执行并保存 PIDController_response.png
+     ↓
+下一个模块：[Step 00] 分析下一模块...
+```

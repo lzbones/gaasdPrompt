@@ -299,6 +299,24 @@ cd build && ctest --output-on-failure --verbose > ../cppTest/output/$(date +%Y%m
 
 ## 五、测试结果可视化规范
 
+### 1. 可视化输出目录规范
+- **output/ 目录用途**：保存所有 Python 绘图脚本生成的图表文件（如 `.png`），便于用户查看验证。
+- **文件命名约定**：`[FunctionName]_plot.png` 或 `[FunctionName]_response.png`
+
+### 2. Python 绘图英文标注原则（CRITICAL）
+- **原因**：Python 绘图时中文字体常显示为方块（乱码），因此所有 Python 绘制的图表必须使用**英文**作为标题、坐标轴标签和图例。
+- **规范示例**：
+  ```python
+  plt.title("Step Response")           # ✅ 正确：英文标题
+  plt.xlabel("Time (s)")               # ✅ 正确：英文坐标轴标签
+  plt.ylabel("Value")                  # ✅ 正确：英文坐标轴标签
+  plt.legend(["Setpoint", "Measurement"])  # ✅ 正确：英文图例
+  
+  # ❌ 错误：避免使用中文
+  # plt.title("阶跃响应")  
+  # plt.xlabel("时间 (秒)")
+  ```
+
 ### 3. 可视化输出规范补充
 - **README 引用路径**：如 `tests/cppTest/output/simulation_plot.png`（相对路径）
 

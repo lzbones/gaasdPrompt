@@ -19,10 +19,10 @@
 请在以下步骤前勾选（`[x]`）你需要执行的环节，未勾选的将跳过：
 
 - [x] **Step 01 — C++ 代码改写** · `CppCoding/01_cpp_coding.md`
-- [ ] **Step 02 — C++ 测试生成** · `CppCoding/02_cpp_testing.md`
-- [ ] **Step 03 — 函数设计文档生成** · `CppDesign/03_design_doc_gen.md`
-- [ ] **Step 04 — MBD 架构重构** · `MbdRefactor/04_mbd_refactor.md`
-- [ ] **Step 05 — MBD 测试验证** · `MbdRefactor/05_mbd_testing.md`
+- [x] **Step 02 — C++ 测试生成** · `CppCoding/02_cpp_testing.md`
+- [x] **Step 03 — 函数设计文档生成** · `CppDesign/03_design_doc_gen.md`
+- [x] **Step 04 — MBD 架构重构** · `MbdRefactor/04_mbd_refactor.md`
+- [x] **Step 05 — MBD 测试验证** · `MbdRefactor/05_mbd_testing.md`
 
 > **说明**：Step 01 默认勾选作为起点。后续步骤依赖前一步的输出结果，请按序号顺序执行。**本文件（00_gaasdPrompt.md）是总调度入口，不直接参与代码生成，而是负责加载和执行上述各步骤的 Prompt 模板。**
 
@@ -179,14 +179,46 @@ for each step in [勾选的步骤序列]:
 
 ---
 
-## ⚠️ 注意事项
+## ⚠️ 全局约束与执行规范
 
-1. **文件读取权限**：确保你有读取 `CppCoding/`、`CppDesign/` 和 `MbdRefactor/` 目录下 .md 文件的权限
-2. **源代码位置**：用户的 C/C++ 源代码默认位于 `src/cpp/` 目录下（或由用户指定路径）
-3. **MBD 代码位置**：重构后的 MBD FuncModule 架构代码位于 `src/mbd/` 和 `include/mbd/` 目录
-4. **设计文档输出**：Step 03 输出的 .tex 和 .pdf 文件位于 `doc/` 目录，子目录结构与 `src/cpp/` 保持一致
-5. **编译环境**：Step 03 需要 xelatex 和 TeX Live/MacTeX 环境
-6. **Python 环境**：Step 03 的编译脚本使用 `~/.ai-env` 虚拟环境
+### 1. 自动执行模式（CRITICAL）
+- **全程无中断执行**：AI 必须尽可能自动完成所有步骤，中间不要打断用户或要求确认。除非遇到无法自行判断的关键决策点或错误，否则应独立完成全部任务。
+- **批量处理原则**：对于多个模块/函数的处理，应批量生成所有文件后再统一交付，而非逐个等待确认。
+
+### 2. LaTeX 编译规范（Step 03）
+- **必须编译两次**：LaTeX 文档必须使用 `xelatex` 编译**至少两次**，以确保交叉引用（如 `\ref{}`、`\cite{}`、TikZ 标签等）正确解析。第一次编译生成 `.aux` 文件中的引用信息，第二次编译才能正确显示引用内容。若只编译一次，所有引用将显示为"??".
+- **编译脚本已内置**：`CppDesign/03_design_doc_gen.md` 中提供的 `compile_latex.py` 脚本已自动执行两次编译，AI 必须使用该脚本或等效逻辑。
+
+### 3. MBD 元件与组件定义（Step 04）
+- **元件（Element）**：不可再分的原子功能单元，对应叶子节点算法模块（如加速度计算、物理限幅截断、控制偏差计算等），具有清晰的数学或物理含义。
+- **组件（Component）**：由多个元件或其他组件通过拓扑关系构成的复合模块，包含子模块级联和数据路由逻辑。
+- **AI 生成内容**：后续将由 AI 编写所有元件和组件代码，AI 需严格区分二者并遵循相应规范。
+
+### 4. 函数模块目录结构（所有步骤）
+- **独立模块目录**：每个函数/功能模块在对应的分类目录下必须单独建立一个以其模块名命名的子目录。
+- **示例**：`src/cpp/calculateAcceleration/`、`tests/cppTest/unit/calculateAcceleration/`、`doc/calculateAcceleration/`
+
+### 5. MBD 模块编写顺序要求（Step 04）
+- **严格顺序约束**：每个模块必须按照以下顺序完成全部步骤后，方可开始下一个模块的编写：
+  - **Step 00**：模块需求分析与 Traits 五元结构定义
+  - **Step 01**：头文件生成（`include/mbd/[Module].hpp`）
+  - **Step 02**：源文件骨架生成（`src/mbd/[Module].cpp`）
+  - **Step 03**：复合模块 JSON 拓扑蓝图生成（`models/[Module].json`，仅复合模块需要）
+  - **Step 04**：测试用例与测试程序生成（`tests/mbdTest/unit/[Module]_test.cpp`, `[Module]_cases.json`）
+  - **Step 05**：可视化脚本生成与输出（`tests/mbdTest/output/plot_[Module].py`, `[Module]_response.png`）
+- **完成标志**：只有当 Step 01-05 全部完成后，才能开始下一个模块的 Step 00。
+
+### 6. 测试可视化输出规范（Step 02, Step 05）
+- **Python 绘图保存图像**：所有测试的 `output/` 目录必须保存 Python 脚本生成的图表文件（如 `.png`），便于用户查看验证。
+- **英文标注原则**：由于 Python 绘图时中文字体常显示为方块，所有 Python 绘制的图表应使用**英文**作为标题、坐标轴标签和图例。
+
+### 7. 其他约束
+- **文件读取权限**：确保有读取 `CppCoding/`、`CppDesign/` 和 `MbdRefactor/` 目录下 .md 文件的权限
+- **源代码位置**：用户的 C/C++ 源代码默认位于 `src/cpp/` 目录下（或由用户指定路径）
+- **MBD 代码位置**：重构后的 MBD FuncModule 架构代码位于 `src/mbd/` 和 `include/mbd/` 目录
+- **设计文档输出**：Step 03 输出的 .tex 和 .pdf 文件位于 `doc/` 目录，子目录结构与 `src/cpp/` 保持一致
+- **编译环境**：Step 03 需要 xelatex 和 TeX Live/MacTeX 环境
+- **Python 环境**：所有 Python 脚本使用 `~/.ai-env` 虚拟环境
 
 ---
 
