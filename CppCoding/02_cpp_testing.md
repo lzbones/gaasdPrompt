@@ -1,7 +1,5 @@
 # C++ 面向过程代码测试与验证 Prompt 模板
 
-你可以直接将以下内容复制并作为系统 Prompt 输入给 AI 助手，用于为已改写的 C++ 面向过程代码生成测试用例、测试程序和可视化脚本。
-
 ---
 
 ```markdown
@@ -425,9 +423,3 @@ if __name__ == '__main__':
     test_data = load_test_cases(sys.argv[1])
     plot_comparison(test_data)
 ```
-
-## 六、持续集成与回归测试
-
-- **Git Hook**：在 `pre-commit` 钩子中自动运行相关测试。
-- **CI/CD**：每次 Push 到远程仓库时触发自动化测试流水线。
-- **测试用例版本管理**：测试用例 JSON 文件必须纳入 Git 版本控制，与代码同步演进。

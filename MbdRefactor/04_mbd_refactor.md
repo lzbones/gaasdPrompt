@@ -1,6 +1,5 @@
 # MBD FuncModule 架构重构 Prompt 模板
 
-你可以直接将以下内容复制并作为系统 Prompt 输入给 AI 助手，用于将原始 C++ 控制算法重构为符合 **C++20 FuncModule 架构** 的形态。
 
 ---
 
