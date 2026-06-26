@@ -84,22 +84,22 @@ project_root/
 │       ├── unit/                     # Traits 级单元测试代码和用例数据（按模块名建子目录）
 │       │   └── [ModuleName]/
 │       │       ├── [ModuleName]_test.cpp     # 单元测试代码
-│       │       └── [ModuleName]_cases.json   # 测试用例数据（JSON 格式）
+│       │       ├── [ModuleName]_cases.json   # 测试用例数据（JSON 格式）
+│       │       └── output/           # 可视化输出子目录（存放绘图脚本与结果图表）
+│       │           ├── plot_[ModuleName].py    # 画图程序
+│       │           └── [ModuleName]_response.png # 可视化输出图表（阶跃响应等）
 │       ├── verify/                   # 程序验证结果
 │       │   ├── [ModuleName]_verify.txt       # 验证报告
 │       │   └── funcmodule_arch_check.txt     # FuncModule 架构规范检查清单
-│       └── output/                 # 测试结果可视化输出（按模块名建子目录）
-│           └── [ModuleName]/
-│               ├── plot_[ModuleName].py    # 画图程序
-│               └── [ModuleName]_response.png # 可视化输出图表（阶跃响应等）
+│       └── Integration/              # 集成测试目录
 ├── build/                          # 编译输出目录（与 src 同级）
 └── CMakeLists.txt                  # 构建配置（含测试目标）
 ```
 
 ### 2. 测试流程说明
 1. **验证阶段 (verify/)**：在测试之前，先对重构的 MBD 程序进行验证，检查是否符合 Step 04（`MbdRefactor/04_mbd_refactor.md`）中定义的 FuncModule 架构规范要求。
-2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据。**目录结构要求**：每个模块都必须进行测试，且在 `unit/` 目录下必须先按模块名创建独立的子目录（如 `unit/[ModuleName]/`），然后再将对应的测试代码和测试用例放入该子目录下。
-3. **可视化阶段 (output/)**：测试结果的画图程序及其输出保存在此目录。**目录结构要求**：在 `output/` 目录下必须先按模块名创建独立的子目录（如 `output/[ModuleName]/`），然后再存放对应的绘图程序与可视化图表。
+2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据。**目录结构与可视化要求**：每个模块都必须进行测试，且在 `unit/` 目录下必须先按模块名创建独立的子目录（如 `unit/[ModuleName]/`），然后再将对应的测试代码、测试用例放入该子目录下。此外，每个单元测试目录下必须建立 `output/` 子目录（如 `unit/[ModuleName]/output/`），用于存放该单元测试对应的绘图 Python 程序及其输出的图表。
+3. **集成测试阶段 (Integration/)**：集成测试及其输出保存在此目录，代替原本的顶层 output 目录。
 
 ### 3. 验证报告模板（tests/mbdTest/verify/[ModuleName]_verify.txt）
 ```
@@ -307,7 +307,7 @@ target_link_libraries(test_pid_controller PRIVATE control_lib)
 add_test(NAME MBD_Unit_PIDController COMMAND test_pid_controller)
 
 # MBD 复合模块集成测试
-add_executable(test_control_chain mbdTest/integration/test_control_chain.cpp)
+add_executable(test_control_chain mbdTest/Integration/test_control_chain.cpp)
 target_link_libraries(test_control_chain PRIVATE control_lib)
 add_test(NAME MBD_Integration_ControlChain COMMAND test_control_chain)
 
@@ -349,7 +349,7 @@ cd build && ctest -R "MBD_Integration_" --output-on-failure
 cd build && ctest -R "MBD_System_" --output-on-failure
 
 # Step 5: 生成 MBD 专项测试报告
-cd build && ctest --output-on-failure --verbose > ../mbdTest/output/mbd_$(date +%Y%m%d_%H%M%S)_report.txt
+cd build && ctest --output-on-failure --verbose > ../mbdTest/Integration/mbd_$(date +%Y%m%d_%H%M%S)_report.txt
 ```
 
 ### 2. 测试报告内容要求
@@ -368,7 +368,7 @@ cd build && ctest --output-on-failure --verbose > ../mbdTest/output/mbd_$(date +
 ## 七、MBD 测试结果可视化规范
 
 ### 1. 可视化输出目录规范
-- **output/ 目录用途**：保存所有 Python 绘图脚本生成的图表文件（如 `.png`），便于用户查看验证。
+- **output/ 子目录用途**：每个单元测试模块在其 `unit/[ModuleName]/` 下都必须有一个 `output/` 子文件夹，用于保存该模块的所有 Python 绘图脚本生成的图表文件（如 `.png`），便于用户查看验证。
 - **文件命名约定**：`[ModuleName]_response.png` 或 `[ModuleName]_plot.png`
 
 ### 2. Python 绘图英文标注原则（CRITICAL）
@@ -386,7 +386,7 @@ cd build && ctest --output-on-failure --verbose > ../mbdTest/output/mbd_$(date +
   ```
 
 ### 3. 可视化输出规范补充
-- **README 引用路径**：如 `tests/mbdTest/output/pid_step_response.png`（相对路径）
+- **README 引用路径**：如 `tests/mbdTest/unit/[ModuleName]/output/pid_step_response.png`（相对路径）
 
 ### 4. Python 绘图脚本环境约束
 所有用于 MBD 测试结果可视化的 Python 脚本必须遵循以下规范：
@@ -433,9 +433,9 @@ def load_simulation_data(json_path):
         return json.load(f)
 
 def plot_step_response(data, output_dir=None):
-    # 每一个模块的测试结果保存在以其模块名命名的子文件夹下
+    # 每一个模块的测试绘图结果保存在该模块单元测试下的 output/ 子文件夹中
     if output_dir is None:
-        output_dir = os.path.join('mbdTest/output', data['module_name'])
+        output_dir = os.path.join('mbdTest/unit', data['module_name'], 'output')
     os.makedirs(output_dir, exist_ok=True)
     
     time = np.array(data['time'])

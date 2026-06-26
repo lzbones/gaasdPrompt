@@ -81,29 +81,29 @@
 #### 代码输出目录结构（分离存放）
 ```
 项目根目录/
-├── src/                      # 源代码目录
-│   ├── cpp/                  # 普通 C++ 源代码（One Function Per File）
-│   └── mbd/                  # MBD FuncModule 架构代码
-├── include/                  # 头文件目录
-│   ├── cpp/                  # 普通 C++ 头文件
-│   └── mbd/                  # MBD FuncModule 架构头文件
-├── models/                   # MBD 拓扑蓝图（仅 MBD 模块）
+├── src/                      # 源代码目录（扁平化存放）
+│   ├── cpp/                  # 普通 C++ 源代码（一函数一文件，无子目录）
+│   └── mbd/                  # MBD FuncModule 架构代码（一类一文件，无子目录）
+├── include/                  # 头文件目录（扁平化存放）
+│   ├── cpp/                  # 普通 C++ 头文件（一函数一头文件，无子目录）
+│   └── mbd/                  # MBD FuncModule 架构头文件（一类一头文件，无子目录）
+├── models/                   # MBD 拓扑蓝图（仅 MBD 模块，无子目录）
 │   └── [ModuleName].json
 ├── tests/                    # 测试相关文件（与 src/同级）
 │   ├── cppTest/              # C++ 测试结果
 │   │   ├── unit/             # 单元测试代码和用例数据（按函数名建子目录）
 │   │   │   └── [FunctionName]/
+│   │   │       └── output/   # 可视化输出子目录（存放绘图脚本与结果图表）
 │   │   ├── verify/           # 程序验证结果
-│   │   └── output/           # 可视化输出图表（按函数名建子目录）
-│   │       └── [FunctionName]/
+│   │   └── Integration/      # 集成测试目录
 │   └── mbdTest/              # MBD 测试结果
 │       ├── unit/             # Traits 级单元测试代码和用例数据（按模块名建子目录）
 │       │   └── [ModuleName]/
+│       │       └── output/   # 可视化输出子目录（存放绘图脚本与结果图表）
 │       ├── verify/           # 架构规范验证结果
-│       └── output/           # 可视化输出图表（按模块名建子目录）
-│           └── [ModuleName]/
-├── doc/                      # 设计文档输出（与 src/cpp/ 子目录结构一致）
-│   └── .../
+│       └── Integration/      # 集成测试目录
+├── doc/                      # 设计文档输出（按函数名建子目录）
+│   └── [FunctionName]/
 ├── ref/                      # 参考资料目录（存放用户提供的参考资料，若无则留空）
 └── build/                    # 编译输出目录
 ```
@@ -153,18 +153,20 @@ for each step in [勾选的步骤序列]:
 执行步骤：Step 01 → Step 02 → Step 03 → Step 04 → Step 05
 
 输出产物：
-  📄 改写后代码：   src/cpp/[Function]/[Function].cpp, include/cpp/[Function]/[Function].hpp (Step 01)
+  📄 改写后代码：   src/cpp/[Function].cpp, include/cpp/[Function].hpp (Step 01)
   🧪 C++ 测试：     tests/cppTest/
                     ├── unit/[Function]/[Function]_test.cpp, [Function]_cases.json
+                    ├── unit/[Function]/output/[Function]_plot.png, plot_[Function].py (Step 02)
                     ├── verify/[Function]_verify.txt
-                    └── output/[Function]/[Function]_plot.png (Step 02)
+                    └── Integration/ （集成测试）
   📝 设计文档：     doc/[Function]/[Function].pdf (Step 03)
-  🔧 MBD 代码：     src/mbd/[Module]/[Module].cpp, include/mbd/[Module]/[Module].hpp (Step 04)
+  🔧 MBD 代码：     src/mbd/[Module].cpp, include/mbd/[Module].hpp (Step 04)
                     models/[Module].json（拓扑蓝图）
   ✅ MBD 测试：     tests/mbdTest/
                     ├── unit/[Module]/[Module]_test.cpp, [Module]_cases.json
+                    ├── unit/[Module]/output/[Module]_response.png, plot_[Module].py (Step 05)
                     ├── verify/[Module]_verify.txt
-                    └── output/[Module]/[Module]_response.png (Step 05)
+                    └── Integration/ （集成测试）
   📂 参考资料：     ref/ （存放与模块对应的参考资料，若无则为空）
 
 状态：全部成功 ✅
