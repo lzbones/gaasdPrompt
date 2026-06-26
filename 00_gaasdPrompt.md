@@ -1,4 +1,4 @@
-# 🧩 gaasdPrompt 全流程编排 Prompt
+# 🧩 全流程编排 Prompt
 
 > **顶层编排指令**：选择需要执行的步骤序列，AI 将自动加载对应的 prompt 模板文件，按序引导完成代码改写 → 测试 → 设计文档 → MBD 重构 → MBD 测试的完整闭环。
 
@@ -63,17 +63,19 @@
 #### Prompt 模板文件结构
 ```
 项目根目录/
-├── CppCoding/                # C++ 代码改写与测试 Prompt
-│   ├── 01_cpp_coding.md      # C++ 面向过程代码改写规范
-│   └── 02_cpp_testing.md     # C++ 测试生成与验证规范
-├── CppDesign/                # 设计文档生成 Prompt
-│   └── 03_design_doc_gen.md  # LaTeX 格式函数设计文档生成
-├── MbdRefactor/              # MBD 重构与测试 Prompt
-│   ├── 04_mbd_refactor.md    # FuncModule 架构重构规范
-│   └── 05_mbd_testing.md     # MBD 测试生成与验证规范
-├── script/                   # 存放编译、修正等各类脚本
-│   └── compile_latex.py      # LaTeX 编译、自动修正与清理脚本
-└── 00_gaasdPrompt.md         # gaasdPrompt 全流程编排 Prompt（本文件）
+└── [PromptDir]/              # Prompt 文件夹（名称可自定义）
+    ├── CppCoding/            # C++ 代码改写与测试 Prompt
+    │   ├── 01_cpp_coding.md  # C++ 面向过程代码改写规范
+    │   └── 02_cpp_testing.md # C++ 测试生成与验证规范
+    ├── CppDesign/            # 设计文档生成 Prompt
+    │   └── 03_design_doc_gen.md # LaTeX 格式函数设计文档生成
+    ├── MbdRefactor/          # MBD 重构与测试 Prompt
+    │   ├── 04_mbd_refactor.md # FuncModule 架构重构规范
+    │   └── 05_mbd_testing.md # MBD 测试生成与验证规范
+    ├── script/               # 存放编译、修正等各类脚本
+    │   ├── compile_latex.py  # LaTeX 编译、自动修正与清理脚本
+    │   └── run_pipeline.py   # 自动化管线构建与测试验证脚本
+    └── 00_gaasdPrompt.md     # 全流程编排 Prompt（本文件）
 ```
 
 #### 代码输出目录结构（按方案 B 分离存放）
@@ -141,7 +143,7 @@ for each step in [勾选的步骤序列]:
 
 ```
 ═══════════════════════════════════════
-  gaasdPrompt 管线执行完成
+  全流程管线执行完成
 ═══════════════════════════════════════
 执行步骤：Step 01 → Step 02 → Step 03 → Step 04 → Step 05
 
@@ -185,9 +187,10 @@ for each step in [勾选的步骤序列]:
 - **全程无中断执行**：AI 必须尽可能自动完成所有步骤，中间不要打断用户或要求确认。除非遇到无法自行判断的关键决策点或错误，否则应独立完成全部任务。
 - **批量处理原则**：对于多个模块/函数的处理，应批量生成所有文件后再统一交付，而非逐个等待确认。
 
-### 2. LaTeX 编译规范（Step 03）
+### 2. LaTeX 编译规范与自动化管线（Step 03, 所有步骤）
 - **必须编译两次**：LaTeX 文档必须使用 `xelatex` 编译**至少两次**，以确保交叉引用（如 `\ref{}`、`\cite{}`、TikZ 标签等）正确解析。第一次编译生成 `.aux` 文件中的引用信息，第二次编译才能正确显示引用内容。若只编译一次，所有引用将显示为"??".
 - **编译脚本已内置**：`CppDesign/03_design_doc_gen.md` 中提供的 `compile_latex.py` 脚本已自动执行两次编译，AI 必须使用该脚本或等效逻辑。
+- **自动化管线运行**：在批量处理或批量验证时，AI 可调用本 Prompt 目录下的 `script/run_pipeline.py` 进行一键构建、测试、绘图和 PDF 编译，自动化执行整个管线流水线。
 
 ### 3. MBD 元件与组件定义（Step 04）
 - **元件（Element）**：不可再分的原子功能单元，对应叶子节点算法模块（如加速度计算、物理限幅截断、控制偏差计算等），具有清晰的数学或物理含义。
@@ -222,7 +225,13 @@ for each step in [勾选的步骤序列]:
   - 内存管理 → 使用 `<memory>`（智能指针）而非手动 `malloc/free` 或 `new/delete`
 - **例外情况**：仅在标准库无法满足特定需求（如嵌入式实时性要求、特殊硬件接口等）时，才允许自定义实现。
 
-### 8. 其他约束
+### 8. 批量生成与自动化验证规范（CRITICAL - 用于多模块/函数场景）
+- **多模块批量处理原则**：当用户请求批量实现/重构多个模块或函数时（例如整个数学包的元件组），手动逐个编写和测试效率极低且易出错。AI 必须采用“脚本自动化”的二阶段流程：
+  - **第一阶段（代码与用例生成）**：先编写一个 Python 批量生成脚本（如 `generate_all.py`），其中定义各模块的元数据（函数名、中文名、公式、输入输出、测试用例等）。运行此脚本，以模板化方式一键生成全部模块的 C++ 源码/头文件、MBD 源码/头文件、CMakeLists.txt、单元测试代码与用例 JSON、以及 LaTeX 设计文档。
+  - **第二阶段（自动化构建与验证）**：编写或复用通用验证脚本 `script/run_pipeline.py`（位于本 Prompt 目录的 `script/` 下），遍历所有生成的模块，自动执行：CMake 配置与构建 $\rightarrow$ 运行 CTest 测试 $\rightarrow$ 运行 Matplotlib 绘图 $\rightarrow$ 调用 `script/compile_latex.py` 编译 LaTeX 设计文档为 PDF.
+  - **优势**：这种“脚本生成脚本，脚本驱动验证”的二阶段设计，能够保证批量处理的一致性与 100% 的成功率。
+
+### 9. 其他约束
 - **文件读取权限**：确保有读取 `CppCoding/`、`CppDesign/` 和 `MbdRefactor/` 目录下 .md 文件的权限
 - **源代码位置**：用户的 C/C++ 源代码默认位于 `src/cpp/` 目录下（或由用户指定路径）
 - **MBD 代码位置**：重构后的 MBD FuncModule 架构代码位于 `src/mbd/` 和 `include/mbd/` 目录

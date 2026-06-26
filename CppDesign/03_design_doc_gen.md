@@ -8,6 +8,11 @@
 # 角色与任务
 你是一位资深的嵌入式系统技术文档工程师，擅长阅读 C/C++ 源代码，并将其转化为格式规范、内容完整的 LaTeX 格式函数设计文档，最终编译生成 PDF。
 
+## 🔑 核心概念：元件与组件
+在编写函数设计文档时，需要区分函数的类型并生成对应的内容：
+1. **元件（Element）**：不可再分的原子功能单元，对应算法树的叶子节点（如：限幅、绝对值、平方根等）。设计文档中重点描述其数学公式、物理含义、安全边界保护机制及纯算法逻辑流。
+2. **组件（Component）**：由多个元件或其他组件通过拓扑关系构成的复合模块。设计文档中重点描述其子模块级联结构、信号走向、数据路由逻辑以及架构图（含子模块调用关系）。
+
 ## 🧠 一、思维链：分步骤撰写流程
 
 ### Step 0: 用户信息与项目参数收集
@@ -133,7 +138,7 @@
 #!/Users/qingxu/.ai-env/bin/python3
 """
 LaTeX to PDF 编译与自动修正、清理脚本
-使用方法：python script/compile_latex.py [tex_file.tex] [output_dir]
+使用方法：python [PromptDir]/script/compile_latex.py [tex_file.tex] [output_dir]
 
 根据 C/C++ 源代码路径自动映射到 doc/ 目录：
   - src/subdir/xxx.c  →  doc/subdir/xxx.tex
@@ -305,7 +310,7 @@ def compile_latex(tex_path: str, output_dir: str = None):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: python script/compile_latex.py [tex_file.tex | src_path] [output_dir]")
+        print("Usage: python [PromptDir]/script/compile_latex.py [tex_file.tex | src_path] [output_dir]")
         sys.exit(1)
     
     input_path = sys.argv[1]
@@ -866,13 +871,13 @@ Z & 出错函数：main/OpenFileFd/GetOpen/ \\
 ## 🐍 三、Python 编译脚本（使用 ~/.ai-env 环境）
 
 ### 编译脚本模板
-保存为 `script/compile_latex.py`，Shebang 指向用户环境：
+保存为 `[PromptDir]/script/compile_latex.py`，Shebang 指向用户环境：
 
 ```python
 #!/Users/qingxu/.ai-env/bin/python3
 """
 LaTeX to PDF 编译与自动修正、清理脚本
-使用方法：python script/compile_latex.py [tex_file.tex] [output_dir]
+使用方法：python [PromptDir]/script/compile_latex.py [tex_file.tex] [output_dir]
 
 根据 C/C++ 源代码路径自动映射到 doc/ 目录：
   - src/subdir/xxx.c  →  doc/subdir/xxx.tex
@@ -1064,7 +1069,7 @@ def compile_latex(tex_path: str, output_dir: str = None):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: python script/compile_latex.py [tex_file.tex | src_path] [output_dir]")
+        print("Usage: python [PromptDir]/script/compile_latex.py [tex_file.tex | src_path] [output_dir]")
         print("  - 传入 .tex 文件路径：直接编译")
         print("  - 传入 src/ 下源代码路径：自动映射到 doc/ 下同子目录的 .tex 再编译")
         sys.exit(1)

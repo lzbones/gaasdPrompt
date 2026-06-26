@@ -330,7 +330,7 @@ add_custom_target(mbd_all_tests
 # Step 0: 程序验证（在正式测试前进行）
 mkdir -p mbdTest/verify
 # 检查 FuncModule 架构规范
-python3 scripts/check_funcmodule_arch.py src/ > mbdTest/verify/architecture_check.txt 2>&1
+python3 [PromptDir]/script/check_funcmodule_arch.py src/ > mbdTest/verify/architecture_check.txt 2>&1
 # 编译验证
 g++ -fsyntax-only src/[ModuleName].cpp > mbdTest/verify/[ModuleName]_syntax.txt 2>&1
 
