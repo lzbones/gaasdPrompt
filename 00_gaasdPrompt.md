@@ -199,7 +199,7 @@ for each step in [勾选的步骤序列]:
 - **AI 生成内容**：后续将由 AI 编写所有元件和组件代码，AI 需严格区分二者并遵循相应规范。
 
 ### 3. 函数模块目录结构（所有步骤）
-- **独立模块目录**：每个函数/功能模块在对应的分类目录下必须单独建立一个以其模块名命名的子目录，src、include这两个文件夹下的源文件和头文件除外。
+- **独立模块目录**：除src、include这两个文件夹之外，每个函数/功能模块在对应的分类目录下必须单独建立一个以其模块名命名的子目录（src、include这两个文件夹下的源文件和头文件除外，这两个文件夹下的文件是扁平化的）
 - **示例**：`src/cpp/calculateAcceleration.cpp`、`include/cpp/calculateAcceleration.hpp`、`tests/cppTest/unit/calculateAcceleration/calculateAcceleration_test.cpp`、`doc/calculateAcceleration/calculateAcceleration.pdf`
 
 ### 4. C/C++ 标准库优先使用规范（CRITICAL）
