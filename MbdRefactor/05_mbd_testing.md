@@ -1,7 +1,5 @@
 # MBD FuncModule 架构测试与验证 Prompt 模板
 
-你可以直接将以下内容复制并作为系统 Prompt 输入给 AI 助手，用于为已重构的 MBD FuncModule 架构代码生成测试用例、测试程序和可视化脚本。
-
 ---
 
 ```markdown
@@ -52,6 +50,7 @@
 ### 2. Traits 级单元测试（叶子节点测试）
 - **测试对象**：每个继承自 `FuncModule` 的叶子节点类。
 - **测试重点**：验证 `run()` 方法在给定 `Input` + `Param` + `State` 下是否产生正确的 `Output`。
+- **用例对齐要求（与 CPP 对齐）**：MBD 版本的测试必须在与 CPP 版本完全相同的测试用例输入（Input）、参数（Param）和初始状态（State）下进行，以对比验证 MBD 改写/重构后的正确性。
 - **测试用例保存**：使用 JSON 格式存储，与 Traits 结构体一一对应。
 
 ### 3. 复合模块集成测试（级联测试）
@@ -82,23 +81,25 @@ project_root/
 ├── tests/                            # 测试相关文件（与 src 同级）
 │   ├── cppTest/                      # C++ 测试相关文件（结构见 ../CppCoding/02_cpp_testing.md）
 │   └── mbdTest/                      # MBD 测试相关文件（结构见 ../MbdRefactor/05_mbd_testing.md）
-│       ├── unit/                     # Traits 级单元测试代码和用例数据
-│       │   ├── [ModuleName]_test.cpp     # 单元测试代码
-│       │   └── [ModuleName]_cases.json   # 测试用例数据（JSON 格式）
+│       ├── unit/                     # Traits 级单元测试代码和用例数据（按模块名建子目录）
+│       │   └── [ModuleName]/
+│       │       ├── [ModuleName]_test.cpp     # 单元测试代码
+│       │       └── [ModuleName]_cases.json   # 测试用例数据（JSON 格式）
 │       ├── verify/                   # 程序验证结果
 │       │   ├── [ModuleName]_verify.txt       # 验证报告
 │       │   └── funcmodule_arch_check.txt     # FuncModule 架构规范检查清单
-│       └── output/                 # 测试结果可视化输出
-│           ├── plot_[ModuleName].py    # 画图程序
-│           └── [ModuleName]_response.png # 可视化输出图表（阶跃响应等）
+│       └── output/                 # 测试结果可视化输出（按模块名建子目录）
+│           └── [ModuleName]/
+│               ├── plot_[ModuleName].py    # 画图程序
+│               └── [ModuleName]_response.png # 可视化输出图表（阶跃响应等）
 ├── build/                          # 编译输出目录（与 src 同级）
 └── CMakeLists.txt                  # 构建配置（含测试目标）
 ```
 
 ### 2. 测试流程说明
-1. **验证阶段 (verify/)**：在测试之前，先对重构的 MBD 程序进行验证，检查是否符合 Step 04（`MbdRefactor/04_mbd_refactor.md`）中定义的 FuncModule 架构规范要求
-2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据
-3. **可视化阶段 (output/)**：测试结果的画图程序及其输出保存在此目录
+1. **验证阶段 (verify/)**：在测试之前，先对重构的 MBD 程序进行验证，检查是否符合 Step 04（`MbdRefactor/04_mbd_refactor.md`）中定义的 FuncModule 架构规范要求。
+2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据。**目录结构要求**：每个模块都必须进行测试，且在 `unit/` 目录下必须先按模块名创建独立的子目录（如 `unit/[ModuleName]/`），然后再将对应的测试代码和测试用例放入该子目录下。
+3. **可视化阶段 (output/)**：测试结果的画图程序及其输出保存在此目录。**目录结构要求**：在 `output/` 目录下必须先按模块名创建独立的子目录（如 `output/[ModuleName]/`），然后再存放对应的绘图程序与可视化图表。
 
 ### 3. 验证报告模板（tests/mbdTest/verify/[ModuleName]_verify.txt）
 ```
@@ -431,7 +432,10 @@ def load_simulation_data(json_path):
     with open(json_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-def plot_step_response(data, output_dir='mbdTest/output'):
+def plot_step_response(data, output_dir=None):
+    # 每一个模块的测试结果保存在以其模块名命名的子文件夹下
+    if output_dir is None:
+        output_dir = os.path.join('mbdTest/output', data['module_name'])
     os.makedirs(output_dir, exist_ok=True)
     
     time = np.array(data['time'])

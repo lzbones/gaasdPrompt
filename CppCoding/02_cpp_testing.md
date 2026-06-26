@@ -108,24 +108,26 @@ project_root/
 │   └── mbd/                          # MBD FuncModule 架构代码
 ├── tests/                            # 测试相关文件（与 src 同级）
 │   ├── cppTest/                      # C++ 测试相关文件
-│   │   ├── unit/                     # 函数级单元测试代码和用例数据
-│   │   │   ├── [FunctionName]_test.cpp   # 单元测试代码
-│   │   │   └── [FunctionName]_cases.json # 测试用例数据（JSON 格式）
+│   │   ├── unit/                     # 函数级单元测试代码和用例数据（按函数名建子目录）
+│   │   │   └── [FunctionName]/
+│   │   │       ├── [FunctionName]_test.cpp   # 单元测试代码
+│   │   │       └── [FunctionName]_cases.json # 测试用例数据（JSON 格式）
 │   │   ├── verify/                   # 程序验证结果
 │   │   │   ├── [FunctionName]_verify.txt       # 验证报告
 │   │   │   └── coding_standard_check.txt       # 代码规范检查清单
-│   │   └── output/                 # 测试结果可视化输出
-│   │       ├── plot_[FunctionName].py    # 画图程序
-│   │       └── [FunctionName]_plot.png   # 可视化输出图表
+│   │   └── output/                 # 测试结果可视化输出（按函数名建子目录）
+│   │       └── [FunctionName]/
+│   │           ├── plot_[FunctionName].py    # 画图程序
+│   │           └── [FunctionName]_plot.png   # 可视化输出图表
 │   └── mbdTest/                    # MBD 测试相关文件（结构见 ../MbdRefactor/05_mbd_testing.md）
 ├── build/                          # 编译输出目录（与 src 同级）
 └── CMakeLists.txt                  # 构建配置（含测试目标）
 ```
 
 ### 2. 测试流程说明
-1. **验证阶段 (verify/)**：在测试之前，先对改写的程序进行验证，检查是否符合 Step 01（`CppCoding/01_cpp_coding.md`）中定义的面向过程规范要求
-2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据
-3. **可视化阶段 (output/)**：测试结果的画图程序及其输出保存在此目录
+1. **验证阶段 (verify/)**：在测试之前，先对改写的程序进行验证，检查是否符合 Step 01（`CppCoding/01_cpp_coding.md`）中定义的面向过程规范要求。
+2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据。**目录结构要求**：每个模块都必须进行测试，且在 `unit/` 目录下必须先按函数名创建独立的子目录（如 `unit/[FunctionName]/`），然后再将对应的测试代码和测试用例放入该子目录下。
+3. **可视化阶段 (output/)**：测试结果的画图程序及其输出保存在此目录。**目录结构要求**：在 `output/` 目录下必须先按函数名创建独立的子目录（如 `output/[FunctionName]/`），然后再存放对应的绘图程序与可视化图表。
 
 ### 3. 验证报告模板（tests/cppTest/verify/[FunctionName]_verify.txt）
 ```
@@ -395,7 +397,10 @@ def load_test_cases(json_path):
     with open(json_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
-def plot_comparison(test_data, output_dir='cppTest/output'):
+def plot_comparison(test_data, output_dir=None):
+    # 每一个模块的测试结果保存在以其函数名命名的子文件夹下
+    if output_dir is None:
+        output_dir = os.path.join('cppTest/output', test_data['function_name'])
     os.makedirs(output_dir, exist_ok=True)
     
     # 提取数据
