@@ -78,31 +78,57 @@
     └── 00_gaasdPrompt.md     # 全流程编排 Prompt（本文件）
 ```
 
-#### 代码输出目录结构（按方案 B 分离存放）
+#### 代码输出目录结构
 ```
 项目根目录/
 ├── src/                      # 源代码目录
-│   ├── cpp/                  # 普通 C++ 源代码（One Function Per File）
-│   └── mbd/                  # MBD FuncModule 架构代码
+│   ├── cpp/                  # 普通 C++ 源代码（面向过程，函数名命名）
+│   │   └── [FunctionName]/   # 每个函数独立子目录
+│   │       └── [FunctionName].cpp
+│   └── mbd/                  # MBD FuncModule 架构代码（面向对象，类名命名）
+│       └── [ModuleName]/     # 每个模块独立子目录
+│           └── [ClassName].cpp
 ├── include/                  # 头文件目录
-│   ├── cpp/                  # 普通 C++ 头文件
-│   └── mbd/                  # MBD FuncModule 架构头文件
+│   ├── cpp/                  # 普通 C++ 头文件（函数名命名）
+│   │   └── [FunctionName]/   # 每个函数独立子目录
+│   │       ├── [FunctionName].hpp        # 与源文件对应的头文件
+│   │       └── [FunctionName]Consts.hpp  # （可选）通用常量/结构体定义
+│   └── mbd/                  # MBD FuncModule 架构头文件（类名命名）
+│       └── [ModuleName]/     # 每个模块独立子目录
+│           └── [ClassName].hpp
 ├── models/                   # MBD 拓扑蓝图（仅 MBD 模块）
 │   └── [ModuleName].json
-├── tests/                    # 测试相关文件（与 src/同级）
+├── tests/                    # 测试相关文件
 │   ├── cppTest/              # C++ 测试结果
 │   │   ├── unit/             # 单元测试代码和用例数据
+│   │   │   └── [FunctionName]/    # 每个函数独立子目录
+│   │   │       ├── [FunctionName]_test.cpp
+│   │   │       └── [FunctionName]_cases.json
 │   │   ├── verify/           # 程序验证结果
+│   │   │   └── [FunctionName]/    # 每个函数独立子目录
+│   │   │       └── [FunctionName]_verify.txt
 │   │   └── output/           # 可视化输出图表
+│   │       └── [FunctionName]/    # 每个函数独立子目录
+│   │           └── [FunctionName]_plot.png
 │   └── mbdTest/              # MBD 测试结果
 │       ├── unit/             # Traits 级单元测试代码和用例数据
+│       │   └── [ModuleName]/      # 每个模块独立子目录
+│       │       ├── [ClassName]_test.cpp
+│       │       └── [FunctionName]_cases.json    # 复用 C++ 测试用例
 │       ├── verify/           # 架构规范验证结果
+│       │   └── [ModuleName]/      # 每个模块独立子目录
+│       │       └── [ClassName]_verify.txt
 │       └── output/           # 可视化输出图表
-├── doc/                      # 设计文档输出（与 src/cpp/ 子目录结构一致）
-│   └── .../
-├── ref/                      # 参考资料目录（用户可选，用于存放与各模块对应的参考材料）
-│   ├── cpp/[Module]/         # C++ 模块参考资料（如原始需求、算法论文、技术报告等）
-│   └── mbd/[Module]/         # MBD 模块参考资料
+│           └── [ModuleName]/      # 每个模块独立子目录
+│               └── [ClassName]_response.png
+├── doc/                      # 设计文档输出
+│   └── [FunctionName]/       # 每个函数独立子目录
+│       └── [FunctionName].pdf
+├── ref/                      # 参考资料目录（与 src、tests 等同级）
+│   ├── cpp/                  # C++ 模块参考资料
+│   │   └── [FunctionName]/   # 每个函数独立子目录
+│   └── mbd/                  # MBD 模块参考资料
+│       └── [ModuleName]/     # 每个模块独立子目录
 └── build/                    # 编译输出目录
 ```
 
@@ -134,7 +160,7 @@ for each step in [勾选的步骤序列]:
     3. 加载该 Prompt 作为系统指令
     4. 使用上一步的输出作为当前步的输入（Step 01 使用用户提供的原始代码）
     5. 执行该步骤的所有子任务
-    6. 保存输出产物到约定目录（src/cpp/、src/mbd/、tests/cppTest/、tests/mbdTest/等）
+    6. 保存输出产物到约定目录（src/cpp/[FunctionName]/、include/cpp/[FunctionName]/、tests/cppTest/unit/[FunctionName]/等）
     7. 记录输出摘要供下一步使用
 ```
 
@@ -150,19 +176,21 @@ for each step in [勾选的步骤序列]:
 ═══════════════════════════════════════
 执行步骤：Step 01 → Step 02 → Step 03 → Step 04 → Step 05
 
-输出产物：
-  📄 改写后代码：   src/cpp/[Function].cpp, include/cpp/[Function].hpp (Step 01)
+输出产物（每个函数/模块独立存放）：
+  📄 改写后代码：   src/cpp/[FunctionName]/[FunctionName].cpp
+                    include/cpp/[FunctionName]/[FunctionName].hpp (Step 01)
   🧪 C++ 测试：     tests/cppTest/
-                    ├── unit/[Function]_test.cpp, [Function]_cases.json
-                    ├── verify/[Function]_verify.txt
-                    └── output/[Function]_plot.png (Step 02)
-  📝 设计文档：     doc/[Function]/[Function].pdf (Step 03)
-  🔧 MBD 代码：     src/mbd/[Module].cpp, include/mbd/[Module].hpp (Step 04)
-                    models/[Module].json（拓扑蓝图）
+                    ├── unit/[FunctionName]/[FunctionName]_test.cpp, [FunctionName]_cases.json
+                    ├── verify/[FunctionName]/[FunctionName]_verify.txt
+                    └── output/[FunctionName]/[FunctionName]_plot.png (Step 02)
+  📝 设计文档：     doc/[FunctionName]/[FunctionName].pdf (Step 03)
+  🔧 MBD 代码：     src/mbd/[ModuleName]/[ClassName].cpp
+                    include/mbd/[ModuleName]/[ClassName].hpp (Step 04)
+                    models/[ModuleName].json（拓扑蓝图）
   ✅ MBD 测试：     tests/mbdTest/
-                    ├── unit/[Module]_test.cpp, [Module]_cases.json
-                    ├── verify/[Module]_verify.txt
-                    └── output/[Module]_response.png (Step 05)
+                    ├── unit/[ModuleName]/[ClassName]_test.cpp, [FunctionName]_cases.json
+                    ├── verify/[ModuleName]/[ClassName]_verify.txt
+                    └── output/[ModuleName]/[ClassName]_response.png (Step 05)
 
 状态：全部成功 ✅
 ═══════════════════════════════════════
@@ -200,18 +228,24 @@ for each step in [勾选的步骤序列]:
 - **组件（Component）**：由多个元件或其他组件通过拓扑关系构成的复合模块，包含子模块级联和数据路由逻辑。
 - **AI 生成内容**：后续将由 AI 编写所有元件和组件代码，AI 需严格区分二者并遵循相应规范。
 
-### 4. 函数模块目录结构（所有步骤）
-- **独立模块目录**：每个函数/功能模块在对应的分类目录下必须单独建立一个以其模块名命名的子目录。
-- **示例**：`src/cpp/calculateAcceleration/`、`tests/cppTest/unit/calculateAcceleration/`、`doc/calculateAcceleration/`
+### 4. 函数/模块独立目录结构规范（所有步骤）
+- **独立模块目录**：每个函数/功能模块必须在对应的分类目录下单独建立一个以其模块名命名的子目录。
+- **C++ 文件命名规则（面向过程）**：源代码 `.cpp` 和头文件 `.hpp` 的文件名与函数名完全一致，分别存放在 `src/cpp/[FunctionName]/` 和 `include/cpp/[FunctionName]/` 下。
+- **MBD 文件命名规则（面向对象）**：MBD 重构后的代码采用类实现，源文件和头文件使用**类名**命名（如 `[ClassName].cpp`、`[ClassName].hpp`），存放在以模块名命名的子目录中（`src/mbd/[ModuleName]/`、`include/mbd/[ModuleName]/`）。
+- **可选常量/结构体头文件**：允许为每个函数模块创建额外的 `.hpp` 文件用于定义通用常量、枚举类型或数据结构，命名需与函数名保持语义一致（如 `[FunctionName]Consts.hpp`、`[FunctionName]Types.hpp`）。
+- **完整测试覆盖**：每一个函数/模块都必须进行独立测试，测试结果按函数名/模块名分类存放于对应的子目录中。
+- **示例**：
+  - C++ 代码：`src/cpp/calculateAcceleration/calculateAcceleration.cpp`、`include/cpp/calculateAcceleration/calculateAcceleration.hpp`
+  - MBD 代码：`src/mbd/accelerationModule/AccelerationElement.cpp`、`include/mbd/accelerationModule/AccelerationElement.hpp`（类名命名）
 
 ### 5. MBD 模块编写顺序要求（Step 04）
 - **严格顺序约束**：每个模块必须按照以下顺序完成全部步骤后，方可开始下一个模块的编写：
   - **Step 00**：模块需求分析与 Traits 五元结构定义
-  - **Step 01**：头文件生成（`include/mbd/[Module].hpp`）
-  - **Step 02**：源文件骨架生成（`src/mbd/[Module].cpp`）
-  - **Step 03**：复合模块 JSON 拓扑蓝图生成（`models/[Module].json`，仅复合模块需要）
-  - **Step 04**：测试用例与测试程序生成（`tests/mbdTest/unit/[Module]_test.cpp`, `[Module]_cases.json`）
-  - **Step 05**：可视化脚本生成与输出（`tests/mbdTest/output/plot_[Module].py`, `[Module]_response.png`）
+  - **Step 01**：头文件生成（`include/mbd/[ModuleName]/[ClassName].hpp`）
+  - **Step 02**：源文件骨架生成（`src/mbd/[ModuleName]/[ClassName].cpp`）
+  - **Step 03**：复合模块 JSON 拓扑蓝图生成（`models/[ModuleName].json`，仅复合模块需要）
+  - **Step 04**：测试用例与测试程序生成（`tests/mbdTest/unit/[ModuleName]/[ClassName]_test.cpp`, `[FunctionName]_cases.json`）
+  - **Step 05**：可视化脚本生成与输出（`tests/mbdTest/output/[ModuleName]/plot_[ClassName].py`, `[ClassName]_response.png`）
 - **完成标志**：只有当 Step 01-05 全部完成后，才能开始下一个模块的 Step 00。
 
 ### 6. 测试可视化输出规范（Step 02, Step 05）
@@ -235,17 +269,18 @@ for each step in [勾选的步骤序列]:
   - **优势**：这种"脚本生成脚本，脚本驱动验证"的二阶段设计，能够保证批量处理的一致性与 100% 的成功率。
 
 ### 9. 参考资料目录（ref）规范（所有步骤）
-- **目录位置**：在每个函数/功能模块的根目录下，必须创建与 `src/`、`doc/` 等同级的 `ref/` 子文件夹，用于存放与该模块对应的参考资料。
+- **目录位置**：`ref/` 文件夹位于项目根目录下，与 `src/`、`tests/`、`doc/` 等顶级目录同级。
 - **用途说明**：`ref/` 文件夹用于存储用户提供的参考材料，包括但不限于原始需求文档、算法论文、技术报告、规范标准、外部参考文献等。
-- **创建要求**：AI 在生成各模块目录结构时，必须为每个模块创建 `ref/` 子文件夹（即使为空）。
+- **子目录结构**：`ref/` 下按 `cpp/` 和 `mbd/` 分类，每个函数/模块拥有独立的子目录。
+- **创建要求**：AI 在生成各模块目录结构时，必须为每个模块创建对应的 `ref/[cpp|mbd]/[FunctionName|ModuleName]/` 子文件夹（即使为空）。
 - **内容填充**：若用户提供参考资料，应将其放入对应模块的 `ref/` 目录下；若用户未提供，该文件夹保持空目录即可。
 - **示例**：
-  - `src/cpp/calculateAcceleration/ref/` — C++ 模块参考资料
-  - `src/mbd/pidController/ref/` — MBD 模块参考资料
+  - `ref/cpp/calculateAcceleration/` — C++ 模块参考资料
+  - `ref/mbd/accelerationModule/` — MBD 模块参考资料
 
 ### 10. MBD 测试与 C++ 测试用例一致性规范（Step 05）
 - **测试用例复用原则**：MBD 版本的测试必须使用与 C++ 版本完全相同的测试用例输入数据，旨在验证 MBD 改写后的功能正确性。
-- **输入一致性要求**：MBD 测试的 `[Module]_cases.json` 文件应直接复用 Step 02 生成的 C++ 测试用例数据（`[Function]_cases.json`），确保输入参数、边界条件、异常场景完全一致。
+- **输入一致性要求**：MBD 测试的 `[FunctionName]_cases.json` 文件应直接复用 Step 02 生成的 C++ 测试用例数据，确保输入参数、边界条件、异常场景完全一致。
 - **输出对比验证**：在 MBD 测试验证阶段，应将 MBD 模块的输出结果与对应 C++ 函数的输出结果进行比对，确认两者在相同输入下的输出误差在可接受范围内（如浮点精度容差）。
 - **目的说明**：通过相同输入下的输出对比，确保 MBD 重构未引入功能偏差，实现从面向过程代码到模型驱动架构的正确迁移。
 
@@ -253,7 +288,7 @@ for each step in [勾选的步骤序列]:
 - **文件读取权限**：确保有读取 `CppCoding/`、`CppDesign/` 和 `MbdRefactor/` 目录下 .md 文件的权限
 - **源代码位置**：用户的 C/C++ 源代码默认位于 `src/cpp/` 目录下（或由用户指定路径）
 - **MBD 代码位置**：重构后的 MBD FuncModule 架构代码位于 `src/mbd/` 和 `include/mbd/` 目录
-- **设计文档输出**：Step 03 输出的 .tex 和 .pdf 文件位于 `doc/` 目录，子目录结构与 `src/cpp/` 保持一致
+- **设计文档输出**：Step 03 输出的 .tex 和 .pdf 文件位于 `doc/` 目录，子目录结构与函数模块名保持一致
 - **编译环境**：Step 03 需要 xelatex 和 TeX Live/MacTeX 环境
 - **Python 环境**：所有 Python 脚本使用 `~/.ai-env` 虚拟环境
 
