@@ -18,9 +18,11 @@
 │   ├── 04_mbd_refactor.md    # FuncModule 架构重构规范
 │   └── 05_mbd_testing.md     # MBD 测试生成与验证规范
 ├── script/                   # 自动化编译与管线脚本
+│   ├── check_funcmodule_arch.py # MBD FuncModule 架构规范静态校验脚本
 │   ├── compile_latex.py      # LaTeX 自动编译、修正与清理脚本
 │   ├── run_pipeline.py       # 自动化管线构建与测试验证脚本
 │   └── README.md             # Script 目录说明文档
+├── comparison_report.md      # 提示词模板版本修改与优化对比报告
 └── README.md                 # 本说明文件
 ```
 
@@ -89,18 +91,19 @@ project_root/
 │   │   ├── unit/                 # 函数级单元测试代码和用例数据（按函数名建子目录）
 │   │   │   └── [FunctionName]/
 │   │   │       └── output/   # 可视化输出子目录（存放绘图脚本与结果图表）
-│   │   ├── verify/               # 程序验证结果
+│   │   ├── verify/               # 程序验证结果（包含 [FunctionName]_verify.txt）
 │   │   └── Integration/          # 集成测试目录
 │   └── mbdTest/                  # MBD 测试结果
 │       ├── unit/                 # Traits 级单元测试代码和用例数据（按模块名建子目录）
 │       │   └── [ModuleName]/
 │       │       └── output/   # 可视化输出子目录（存放绘图脚本与结果图表）
-│       ├── verify/               # 架构规范验证结果
+│       ├── verify/               # 架构规范验证结果（含 [ModuleName]_verify.txt 与 architecture_check.txt）
 │       └── Integration/          # 集成测试目录
 ├── doc/                          # 设计文档输出（按函数名建子目录）
 │   └── [FunctionName]/
 ├── ref/                          # 参考资料目录（存放与该模块对应的参考资料，若无则留空）
-└── build/                        # 编译输出目录
+├── build/                        # 编译输出目录
+└── .gitignore                # Git 忽略规则文件（模板自动生成，排除 build 缓存与系统日志）
 ```
 
 ---
@@ -122,6 +125,7 @@ project_root/
 
 - **`00_gaasdPrompt.md`** - 全流程编排主入口，包含完整的步骤选择和执行规则
 - **`script/README.md`** - Script 目录下各脚本的详细使用说明
+- **`comparison_report.md`** - 提示词模块与管线的历史修改与优化对比报告（详见重要特性及 Bug 修复）
 
 ### 目录结构说明
 
