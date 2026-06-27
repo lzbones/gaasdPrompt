@@ -332,6 +332,8 @@ if __name__ == '__main__':
 \usepackage{array}
 \usepackage{fancyhdr}
 \usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
 
 % 页面边距设置
 \geometry{left=2.5cm, right=2.5cm, top=3cm, bottom=2.5cm}

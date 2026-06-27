@@ -1,4 +1,4 @@
-#!/Users/qingxu/.ai-env/bin/python3
+#!/usr/bin/env python3
 """
 LaTeX to PDF 编译与自动修正、清理脚本
 使用方法：python <PromptDir>/script/compile_latex.py [tex_file.tex] [output_dir]

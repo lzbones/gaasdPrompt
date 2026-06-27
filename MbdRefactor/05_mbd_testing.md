@@ -301,6 +301,12 @@ if __name__ == '__main__':
 ## 四、CMake MBD 测试配置
 
 ```cmake
+# 强制限制 C++20 标准
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+enable_testing()
+
 # MBD Traits 级单元测试
 add_executable(test_pid_controller tests/mbdTest/unit/PIDController/PIDController_test.cpp)
 target_link_libraries(test_pid_controller PRIVATE control_lib)

@@ -276,6 +276,10 @@ int main() {
 在 `CMakeLists.txt` 中添加以下配置：
 
 ```cmake
+# 强制限制 C++20 标准
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 enable_testing()
 
 # 单元测试目标
