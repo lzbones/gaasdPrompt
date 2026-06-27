@@ -106,7 +106,61 @@
 │   └── [FunctionName]/
 ├── ref/                      # 参考资料目录（存放用户提供的参考资料，若无则留空）
 ├── build/                    # 编译输出目录
-└── .gitignore                # Git 忽略规则文件（过滤临时/编译文件）
+└── .gitignore                # Git 忽略规则文件（必须包含 **/build/ 与 **/.DS_Store 以忽略各模块编译产物与系统缓存）
+```
+
+#### `.gitignore` 模板文件规范
+当 AI 创建项目结构时，必须自动在项目根目录下生成并写入 `.gitignore` 文件，规则规范如下：
+```gitignore
+# C++ / CMake Build Outputs
+**/build/
+build/
+bin/
+lib/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+*.o
+*.a
+*.so
+*.dylib
+*.out
+
+# LaTeX Compilation Auxiliary Files (不忽略 Makefile 和 *.pdf)
+*.aux
+*.log
+*.toc
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.nav
+*.snm
+*.vrb
+*.bbl
+*.blg
+
+# Python Runtime & Venv
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.ai-env/
+
+# IDE & System Cache Files
+**/.DS_Store
+.DS_Store
+.vscode/
+.idea/
+.project
+.cproject
+.settings/
+*.swp
+*.swo
 ```
 
 ### 4. 执行模式
