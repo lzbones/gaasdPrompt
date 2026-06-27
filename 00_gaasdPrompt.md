@@ -220,7 +220,7 @@ for each step in [勾选的步骤序列]:
   ✅ MBD 测试：     tests/mbdTest/
                     ├── unit/[Module]/[Module]_test.cpp, [Module]_cases.json
                     ├── unit/[Module]/output/[Module]_response.png, plot_[Module].py (Step 05)
-                    ├── verify/[Module]_verify.txt
+                    ├── verify/[Module]_verify.txt （规范验证报告）与 architecture_check.txt （架构合规检查报告）
                     └── Integration/ （集成测试）
   📂 参考资料：     ref/ （存放与模块对应的参考资料，若无则为空）
 

@@ -96,6 +96,10 @@ project_root/
 └── CMakeLists.txt                  # 构建配置（含测试目标）
 ```
 
+> [!IMPORTANT]
+> **【源文件注册与编译要求（CRITICAL）】**：
+> 当您在工程中新增或重构了 MBD 算法源文件（例如新建了 `src/mbd/PIDController.cpp`），**必须同步更新项目根目录下的 `CMakeLists.txt`**。请确保将新生成的源文件注册进对应的静态库目标（如 `control_lib`）的源文件列表中（或通过模板自动列入），否则集成测试在链接时会报 `undefined reference` 未定义符号错误。
+
 ### 2. 测试流程说明
 1. **验证阶段 (verify/)**：在测试之前，先对重构的 MBD 程序进行验证，检查是否符合 Step 04（`MbdRefactor/04_mbd_refactor.md`）中定义的 FuncModule 架构规范要求。
 2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据。**目录结构与可视化要求**：每个模块都必须进行测试，且在 `unit/` 目录下必须先按模块名创建独立的子目录（如 `unit/[ModuleName]/`），然后再将对应的测试代码、测试用例放入该子目录下。此外，每个单元测试目录下必须建立 `output/` 子目录（如 `unit/[ModuleName]/output/`），用于存放该单元测试对应的绘图 Python 程序及其输出的图表。
@@ -297,6 +301,10 @@ if __name__ == '__main__':
 在复合模块的 `run()` 方法中，`// === MBD_AUTO_GEN_BEGIN [Xxxx] ===` 和 `// === MBD_AUTO_GEN_END [Xxxx] ===` 之间的代码由图形化平台生成。测试时必须确保：
 - **前置/后置自定义逻辑**不影响自动生成的数据路由。
 - **子模块调用顺序**与 JSON 拓扑中的 `execution_sequence` 一致。
+
+> [!IMPORTANT]
+**【源文件注册与编译要求（CRITICAL）】**：
+当您在工程中新增或重构了 MBD 算法源文件（例如新建了 `src/mbd/PIDController.cpp`），**必须同步更新项目根目录下的 `CMakeLists.txt`**。请确保将新生成的源文件注册进对应的静态库目标（如 `control_lib`）的源文件列表中（或通过模板自动列入），否则集成测试在链接时会报 `undefined reference` 未定义符号错误。
 
 ## 四、CMake MBD 测试配置
 

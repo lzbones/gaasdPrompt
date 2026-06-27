@@ -275,6 +275,10 @@ int main() {
 
 在 `CMakeLists.txt` 中添加以下配置：
 
+> [!IMPORTANT]
+> **【源文件注册与编译要求（CRITICAL）】**：
+> 当您在工程中新增或改写了 C++ 算法源文件（例如新建了 `src/cpp/matrixAdd.cpp`），**必须同步更新项目根目录下的 `CMakeLists.txt`**。请确保将新生成的源文件注册进对应的静态库目标（如 `${PROJECT_NAME}_lib`）的源文件列表中（或通过模板自动列入），否则集成测试在链接时会报 `undefined reference` 未定义符号错误。
+
 ```cmake
 # 强制限制 C++20 标准
 set(CMAKE_CXX_STANDARD 20)
