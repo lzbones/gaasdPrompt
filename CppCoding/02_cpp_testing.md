@@ -81,7 +81,7 @@
 - [ ] **无幻数**：未使用魔法数字（除公式常数外）
 
 ### 2. 函数级单元测试（Unit Test）
-- **一对一原则**：每个源文件（`src/[FunctionName].cpp`）对应一个测试文件（`cppTest/unit/[FunctionName]_test.cpp`）。
+- **一对一原则**：每个源文件（`src/cpp/[FunctionName].cpp`）对应一个测试文件（`tests/cppTest/unit/[FunctionName]/[FunctionName]_test.cpp`）。
 - **测试覆盖要求**：每个函数的所有分支路径必须有对应的测试用例。
 - **断言验证**：使用 `assert()` 或测试框架的断言宏验证输出符合预期。
 
@@ -166,7 +166,7 @@ project_root/
 ```
 
 ### 3. 测试用例 JSON 格式
-每个函数/模块的测试用例必须保存为结构化的 JSON 文件，存放在 `cppTest/unit/[FunctionName]_cases.json`：
+每个函数/模块的测试用例必须保存为结构化的 JSON 文件，存放在 `tests/cppTest/unit/[FunctionName]/[FunctionName]_cases.json`：
 
 ```json
 {
@@ -210,13 +210,13 @@ project_root/
  * @file [FunctionName]_test.cpp
  * @brief [FunctionName] 函数的单元测试
  * 
- * 测试用例来源：cppTest/unit/[FunctionName]_cases.json
+ * 测试用例来源：tests/cppTest/unit/[FunctionName]/[FunctionName]_cases.json
  */
 
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include "../../src/[FunctionName].cpp"
+#include "[FunctionName].hpp"
 
 struct TestCase {
     const char* id;
@@ -279,22 +279,18 @@ int main() {
 enable_testing()
 
 # 单元测试目标
-add_executable(test_calculateAcceleration cppTest/unit/test_calculateAcceleration.cpp)
+add_executable(test_calculateAcceleration tests/cppTest/unit/calculateAcceleration/calculateAcceleration_test.cpp)
 target_link_libraries(test_calculateAcceleration PRIVATE ${PROJECT_NAME}_lib)
 add_test(NAME Unit_CalculateAcceleration COMMAND test_calculateAcceleration)
 
 # 集成测试目标
-add_executable(test_physics_module cppTest/integration/test_physics_module.cpp)
+add_executable(test_physics_module tests/cppTest/Integration/test_physics_module.cpp)
 add_test(NAME Integration_PhysicsModule COMMAND test_physics_module)
-
-# 系统测试目标
-add_executable(test_system cppTest/system/test_main.cpp)
-add_test(NAME System_FullFlow COMMAND test_system)
 
 # 自定义测试目标：运行所有测试
 add_custom_target(run_all_tests
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-    DEPENDS test_calculateAcceleration test_physics_module test_system
+    DEPENDS test_calculateAcceleration test_physics_module
     COMMENT "Running all tests..."
 )
 ```
@@ -304,9 +300,9 @@ add_custom_target(run_all_tests
 ### 1. 分步测试命令
 ```bash
 # Step 0: 程序验证（在正式测试前进行）
-mkdir -p cppTest/verify
-g++ -fsyntax-only src/[FunctionName].cpp > cppTest/verify/[FunctionName]_syntax.txt 2>&1
-g++ -c src/[FunctionName].cpp -o /tmp/[FunctionName].o > cppTest/verify/[FunctionName]_compile.txt 2>&1
+mkdir -p tests/cppTest/verify
+g++ -fsyntax-only src/cpp/[FunctionName].cpp > tests/cppTest/verify/[FunctionName]_syntax.txt 2>&1
+g++ -c src/cpp/[FunctionName].cpp -o /tmp/[FunctionName].o > tests/cppTest/verify/[FunctionName]_compile.txt 2>&1
 
 # Step 1: 编译项目（含测试目标）
 cmake -DBUILD_TESTING=ON -B build
@@ -318,11 +314,8 @@ cd build && ctest -R Unit_ --output-on-failure
 # Step 3: 运行模块级集成测试
 cd build && ctest -R Integration_ --output-on-failure
 
-# Step 4: 运行程序级系统测试
-cd build && ctest -R System_ --output-on-failure
-
-# Step 5: 生成详细测试报告
-cd build && ctest --output-on-failure --verbose > ../cppTest/Integration/$(date +%Y%m%d_%H%M%S)_report.txt
+# Step 4: 生成详细测试报告
+cd build && ctest --output-on-failure --verbose > ../tests/cppTest/Integration/$(date +%Y%m%d_%H%M%S)_report.txt
 ```
 
 ### 2. 测试覆盖率要求
@@ -398,7 +391,7 @@ def load_test_cases(json_path):
 def plot_comparison(test_data, output_dir=None):
     # 每一个模块的测试绘图结果保存在该模块单元测试下的 output/ 子文件夹中
     if output_dir is None:
-        output_dir = os.path.join('cppTest/unit', test_data['function_name'], 'output')
+        output_dir = os.path.join('tests/cppTest/unit', test_data['function_name'], 'output')
     os.makedirs(output_dir, exist_ok=True)
     
     # 提取数据
@@ -417,7 +410,7 @@ def plot_comparison(test_data, output_dir=None):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 2:
-        print("Usage: python plot_tests.py cppTest/unit/[function]_cases.json")
+        print("Usage: python plot_tests.py tests/cppTest/unit/[function]/[function]_cases.json")
         sys.exit(1)
     
     test_data = load_test_cases(sys.argv[1])

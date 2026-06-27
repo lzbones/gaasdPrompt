@@ -26,13 +26,13 @@
 
 ```bash
 # 方式 1：直接传入 .tex 文件路径
-python script/compile_latex.py doc/subdir/function.tex
+python script/compile_latex.py doc/[FunctionName]/[FunctionName].tex
 
 # 方式 2：传入源代码路径，自动映射到对应的 .tex 文件
-python script/compile_latex.py src/subdir/function.cpp
+python script/compile_latex.py src/cpp/[FunctionName].cpp
 
 # 方式 3：指定自定义输出目录
-python script/compile_latex.py doc/subdir/function.tex /custom/output/dir
+python script/compile_latex.py doc/[FunctionName]/[FunctionName].tex /custom/output/dir
 ```
 
 ### 路径映射规则
@@ -41,9 +41,9 @@ python script/compile_latex.py doc/subdir/function.tex /custom/output/dir
 
 | 源码路径 | → | LaTeX 路径 |
 |----------|---|------------|
-| `src/subdir/xxx.cpp` | → | `doc/subdir/xxx.tex` |
-| `src/xxx.cpp` | → | `doc/xxx.tex` |
-| `include/subdir/xxx.hpp` | → | `doc/include/subdir/xxx.tex` |
+| `src/cpp/[FunctionName].cpp` | → | `doc/[FunctionName]/[FunctionName].tex` |
+| `src/mbd/[ModuleName].cpp` | → | `doc/[ModuleName]/[ModuleName].tex` |
+| `include/cpp/[FunctionName].hpp` | → | `doc/[FunctionName]/[FunctionName].tex` |
 
 ### 标题自动修正映射
 
@@ -116,8 +116,8 @@ python script/run_pipeline.py
 1. **CMake Configure**: `cmake -S . -B build`
 2. **CMake Build**: `cmake --build build`
 3. **Run Tests**: `ctest --output-on-failure`
-4. **Generate C++ Plot**: 运行 `tests/cppTest/output/plot_[name].py`
-5. **Generate MBD Plot**: 运行 `tests/mbdTest/output/plot_[Name].py`
+4. **Generate C++ Plot**: 运行 `tests/cppTest/unit/[name]/output/plot_[name].py`
+5. **Generate MBD Plot**: 运行 `tests/mbdTest/unit/[Name]/output/plot_[Name].py`
 6. **Compile LaTeX**: 运行 `compile_latex.py` 编译文档
 
 ### 输出示例

@@ -140,7 +140,7 @@ project_root/
 ```
 
 ### 3. 测试用例 JSON 结构（针对 Traits 模块）
-每个模块必须在 `mbdTest/unit/` 目录下拥有一个对应的 JSON 文件：
+每个模块必须在 `tests/mbdTest/unit/[ModuleName]/` 目录下拥有一个对应的 JSON 文件：
 
 ```json
 {
@@ -179,7 +179,7 @@ project_root/
  * @file [ModuleName]_test.cpp
  * @brief [ModuleName] 模块的 Traits 级单元测试
  * 
- * 测试用例来源：mbdTest/unit/[ModuleName]_cases.json
+ * 测试用例来源：tests/mbdTest/unit/[ModuleName]/[ModuleName]_cases.json
  */
 
 #include <iostream>
@@ -302,24 +302,19 @@ if __name__ == '__main__':
 
 ```cmake
 # MBD Traits 级单元测试
-add_executable(test_pid_controller mbdTest/unit/test_PIDController.cpp)
+add_executable(test_pid_controller tests/mbdTest/unit/PIDController/PIDController_test.cpp)
 target_link_libraries(test_pid_controller PRIVATE control_lib)
 add_test(NAME MBD_Unit_PIDController COMMAND test_pid_controller)
 
 # MBD 复合模块集成测试
-add_executable(test_control_chain mbdTest/Integration/test_control_chain.cpp)
+add_executable(test_control_chain tests/mbdTest/Integration/test_control_chain.cpp)
 target_link_libraries(test_control_chain PRIVATE control_lib)
 add_test(NAME MBD_Integration_ControlChain COMMAND test_control_chain)
-
-# MBD 系统级闭环仿真测试
-add_executable(test_closed_loop mbdTest/system/test_closed_loop_sim.cpp)
-target_link_libraries(test_closed_loop PRIVATE control_lib)
-add_test(NAME MBD_System_ClosedLoop COMMAND test_closed_loop)
 
 # MBD 专用测试目标：验证所有图形化拓扑生成的模块
 add_custom_target(mbd_all_tests
     COMMAND ${CMAKE_CTEST_COMMAND} -R "MBD_" --output-on-failure
-    DEPENDS test_pid_controller test_control_chain test_closed_loop
+    DEPENDS test_pid_controller test_control_chain
     COMMENT "Running all MBD-generated module tests..."
 )
 ```
@@ -329,11 +324,11 @@ add_custom_target(mbd_all_tests
 ### 1. 分步测试命令
 ```bash
 # Step 0: 程序验证（在正式测试前进行）
-mkdir -p mbdTest/verify
+mkdir -p tests/mbdTest/verify
 # 检查 FuncModule 架构规范
-python3 [PromptDir]/script/check_funcmodule_arch.py src/ > mbdTest/verify/architecture_check.txt 2>&1
+python3 [PromptDir]/script/check_funcmodule_arch.py src/mbd/ > tests/mbdTest/verify/architecture_check.txt 2>&1
 # 编译验证
-g++ -fsyntax-only src/[ModuleName].cpp > mbdTest/verify/[ModuleName]_syntax.txt 2>&1
+g++ -fsyntax-only src/mbd/[ModuleName].cpp > tests/mbdTest/verify/[ModuleName]_syntax.txt 2>&1
 
 # Step 1: 编译项目（含 MBD 测试目标）
 cmake -DBUILD_TESTING=ON -DENABLE_MBD_TESTS=ON -B build
@@ -345,11 +340,8 @@ cd build && ctest -R "MBD_Unit_" --output-on-failure
 # Step 3: 运行复合模块集成测试
 cd build && ctest -R "MBD_Integration_" --output-on-failure
 
-# Step 4: 运行系统级闭环仿真测试
-cd build && ctest -R "MBD_System_" --output-on-failure
-
-# Step 5: 生成 MBD 专项测试报告
-cd build && ctest --output-on-failure --verbose > ../mbdTest/Integration/mbd_$(date +%Y%m%d_%H%M%S)_report.txt
+# Step 4: 生成 MBD 专项测试报告
+cd build && ctest --output-on-failure --verbose > ../tests/mbdTest/Integration/mbd_$(date +%Y%m%d_%H%M%S)_report.txt
 ```
 
 ### 2. 测试报告内容要求

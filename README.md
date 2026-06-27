@@ -76,24 +76,30 @@
 
 ```
 project_root/
-├── src/                          # 源代码目录
-│   ├── cpp/                      # 普通 C++ 源代码（One Function Per File）
-│   └── mbd/                      # MBD FuncModule 架构代码
-├── include/                      # 头文件目录
-│   ├── cpp/                      # 普通 C++ 头文件
-│   └── mbd/                      # MBD FuncModule 架构头文件
-├── models/                       # MBD 拓扑蓝图（仅 MBD 模块）
+├── src/                          # 源代码目录（扁平化存放）
+│   ├── cpp/                      # 普通 C++ 源代码（一函数一文件，无子目录）
+│   └── mbd/                      # MBD FuncModule 架构代码（一类一文件，无子目录）
+├── include/                      # 头文件目录（扁平化存放）
+│   ├── cpp/                      # 普通 C++ 头文件（一函数一头文件，无子目录）
+│   └── mbd/                      # MBD FuncModule 架构头文件（一类一头文件，无子目录）
+├── models/                       # MBD 拓扑蓝图（仅 MBD 模块，无子目录）
 │   └── [ModuleName].json
-├── tests/                        # 测试相关文件
+├── tests/                        # 测试相关文件（与 src 同级）
 │   ├── cppTest/                  # C++ 测试结果
-│   │   ├── unit/                 # 单元测试代码和用例数据
+│   │   ├── unit/                 # 函数级单元测试代码和用例数据（按函数名建子目录）
+│   │   │   └── [FunctionName]/
+│   │   │       └── output/   # 可视化输出子目录（存放绘图脚本与结果图表）
 │   │   ├── verify/               # 程序验证结果
-│   │   └── output/               # 可视化输出图表
+│   │   └── Integration/          # 集成测试目录
 │   └── mbdTest/                  # MBD 测试结果
-│       ├── unit/                 # Traits 级单元测试代码和用例数据
+│       ├── unit/                 # Traits 级单元测试代码和用例数据（按模块名建子目录）
+│       │   └── [ModuleName]/
+│       │       └── output/   # 可视化输出子目录（存放绘图脚本与结果图表）
 │       ├── verify/               # 架构规范验证结果
-│       └── output/               # 可视化输出图表
-├── doc/                          # LaTeX 设计文档 (.tex + .pdf)
+│       └── Integration/          # 集成测试目录
+├── doc/                          # 设计文档输出（按函数名建子目录）
+│   └── [FunctionName]/
+├── ref/                          # 参考资料目录（存放与该模块对应的参考资料，若无则留空）
 └── build/                        # 编译输出目录
 ```
 

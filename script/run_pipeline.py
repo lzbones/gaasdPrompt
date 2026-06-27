@@ -77,8 +77,8 @@ def main():
             
         # 4. Generate C++ Plot
         print(f"[{name}] Generating C++ Plot...")
-        plot_cpp_script = module_dir / "tests" / "cppTest" / "output" / f"plot_{name}.py"
-        json_cpp_cases = module_dir / "tests" / "cppTest" / "unit" / f"{name}_cases.json"
+        plot_cpp_script = module_dir / "tests" / "cppTest" / "unit" / name / "output" / f"plot_{name}.py"
+        json_cpp_cases = module_dir / "tests" / "cppTest" / "unit" / name / f"{name}_cases.json"
         code, out, err = run_cmd([PYTHON, str(plot_cpp_script), str(json_cpp_cases)], cwd=module_dir)
         if code != 0:
             print(f"[{name}] C++ Plot generation failed:\n{err}")
@@ -87,8 +87,8 @@ def main():
             
         # 5. Generate MBD Plot
         print(f"[{name}] Generating MBD Plot...")
-        plot_mbd_script = module_dir / "tests" / "mbdTest" / "output" / f"plot_{Name}.py"
-        json_mbd_cases = module_dir / "tests" / "mbdTest" / "unit" / f"{Name}_cases.json"
+        plot_mbd_script = module_dir / "tests" / "mbdTest" / "unit" / Name / "output" / f"plot_{Name}.py"
+        json_mbd_cases = module_dir / "tests" / "mbdTest" / "unit" / Name / f"{Name}_cases.json"
         code, out, err = run_cmd([PYTHON, str(plot_mbd_script), str(json_mbd_cases)], cwd=module_dir)
         if code != 0:
             print(f"[{name}] MBD Plot generation failed:\n{err}")
@@ -98,7 +98,7 @@ def main():
         # 6. Compile LaTeX to PDF
         print(f"[{name}] Compiling LaTeX document...")
         latex_compile_script = Path(__file__).parent / "compile_latex.py"
-        tex_file = module_dir / "doc" / "cpp" / f"{name}.tex"
+        tex_file = module_dir / "doc" / name / f"{name}.tex"
         # Since compile_latex.py compiles tex file and automatically mapped path outputs to pdf,
         # let's run it.
         # compile_latex.py usage: python <PromptDir>/script/compile_latex.py [tex_file.tex] [output_dir]

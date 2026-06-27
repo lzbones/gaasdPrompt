@@ -156,9 +156,11 @@ project_root/
 ├── tests/                # 测试相关文件（与 src 同级）
 │   ├── cppTest/          # C++ 测试相关文件
 │   └── mbdTest/          # MBD 测试相关文件
-│       ├── unit/         # Traits 级单元测试代码和用例数据
+│       ├── unit/         # Traits 级单元测试代码和用例数据（按模块名建子目录）
+│       │   └── [ModuleName]/
+│       │       └── output/   # 可视化输出子目录
 │       ├── verify/       # 程序验证结果
-│       └── output/       # 测试结果可视化输出
+│       └── Integration/  # 集成测试目录
 ├── build/                # 编译输出目录（与 src 同级）
 └── CMakeLists.txt        # 构建配置（含测试目标）
 ```
@@ -189,8 +191,8 @@ project_root/
 | **Step 01** | 头文件生成 | `include/mbd/[ModuleName].hpp` | 生成包含 Traits 五元结构体和类声明的头文件 |
 | **Step 02** | 源文件骨架生成 | `src/mbd/[ModuleName].cpp` | 生成包含 `run()` 方法实现的源文件（元件仅含计算逻辑，组件含 MBD_AUTO_GEN 标记区域） |
 | **Step 03** | 复合模块 JSON 拓扑蓝图生成 | `models/[ModuleName].json` | （仅复合模块需要）定义图形化拓扑蓝图和执行序列 |
-| **Step 04** | 测试用例与测试程序生成 | `tests/mbdTest/unit/[ModuleName]_test.cpp`, `[ModuleName]_cases.json` | 生成单元测试代码和 JSON 格式测试用例数据 |
-| **Step 05** | 可视化脚本生成与输出 | `tests/mbdTest/output/plot_[ModuleName].py`, `[ModuleName]_response.png` | 生成 Python 绘图脚本并执行，保存可视化图表到 output 目录 |
+| **Step 04** | 测试用例与测试程序生成 | `tests/mbdTest/unit/[ModuleName]/[ModuleName]_test.cpp`, `[ModuleName]_cases.json` | 生成单元测试代码和 JSON 格式测试用例数据 |
+| **Step 05** | 可视化脚本生成与输出 | `tests/mbdTest/unit/[ModuleName]/output/plot_[ModuleName].py`, `[ModuleName]_response.png` | 生成 Python 绘图脚本并执行，保存可视化图表到 unit output 目录 |
 
 #### 完成标志与约束
 
@@ -205,8 +207,8 @@ project_root/
      → [Step 01] 生成 include/mbd/PIDController.hpp
      → [Step 02] 生成 src/mbd/PIDController.cpp
      → [Step 03] 生成 models/PIDController.json（如为复合模块）
-     → [Step 04] 生成 tests/mbdTest/unit/PIDController_test.cpp, PIDController_cases.json
-     → [Step 05] 生成 tests/mbdTest/output/plot_PIDController.py，执行并保存 PIDController_response.png
+     → [Step 04] 生成 tests/mbdTest/unit/PIDController/PIDController_test.cpp, PIDController_cases.json
+     → [Step 05] 生成 tests/mbdTest/unit/PIDController/output/plot_PIDController.py，执行并保存 PIDController_response.png
      ↓
 下一个模块：[Step 00] 分析下一模块...
 ```
