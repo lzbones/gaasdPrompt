@@ -305,6 +305,11 @@ if __name__ == '__main__':
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 【重要：避免 macOS 大小写不敏感冲突】
+# 严禁使用全局 include_directories() 混合包含路径。
+# 必须使用 target_include_directories() 针对不同目标隔离包含路径：
+# MBD 库与测试目标优先仅包含 include/mbd（如必须包含 include/cpp，请务必将 include/mbd 放在最前面！）
+
 enable_testing()
 
 # MBD Traits 级单元测试

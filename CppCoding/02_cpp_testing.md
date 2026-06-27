@@ -280,6 +280,11 @@ int main() {
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 【重要：避免 macOS 大小写不敏感冲突】
+# 严禁使用全局 include_directories() 混合包含路径。
+# 必须使用 target_include_directories() 针对不同目标隔离包含路径：
+# 普通 C++ 测试与库目标仅包含 include/cpp，不得包含 include/mbd！
+
 enable_testing()
 
 # 单元测试目标
@@ -387,6 +392,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import json
 import os
+from datetime import datetime
 
 def load_test_cases(json_path):
     with open(json_path, 'r', encoding='utf-8') as f:

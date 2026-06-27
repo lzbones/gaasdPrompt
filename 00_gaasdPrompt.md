@@ -105,7 +105,8 @@
 ├── doc/                      # 设计文档输出（按函数名建子目录）
 │   └── [FunctionName]/
 ├── ref/                      # 参考资料目录（存放用户提供的参考资料，若无则留空）
-└── build/                    # 编译输出目录
+├── build/                    # 编译输出目录
+└── .gitignore                # Git 忽略规则文件（过滤临时/编译文件）
 ```
 
 ### 4. 执行模式
@@ -228,6 +229,7 @@ for each step in [勾选的步骤序列]:
 - **编译环境**：Step 03 需要 xelatex 和 TeX Live/MacTeX 环境
 - **Python 环境**：所有 Python 脚本使用 `~/.ai-env` 虚拟环境
 - **参考资料目录 (ref/)**：要求在生成的各模块根目录中，增加 `ref/` 文件夹（与 `src/`、`include/`、`tests/` 同级），用于存放与该模块对应的参考资料。如果用户提供，则放入该文件夹；若无则留空。
+- **CMake 头文件包含隔离与防大小写冲突约束 (CRITICAL)**：为了防止在 macOS 大小写不敏感文件系统上，`include/cpp/clampValue.hpp`（小驼峰）与 `include/mbd/ClampValue.hpp`（大驼峰）等发生同名冲突，**严禁使用全局 `include_directories()`** 混合包含路径。必须通过 `target_include_directories()` 针对不同 target 进行严格隔离：普通 C++ 库/测试目标仅包含 `include/cpp`；MBD 库/测试目标仅包含 `include/mbd`（若必须包含 `include/cpp`，则必须将 `include/mbd` 排在最前面）。
 
 ---
 

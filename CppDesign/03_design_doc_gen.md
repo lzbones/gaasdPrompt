@@ -535,11 +535,11 @@ if __name__ == '__main__':
 ```latex
 \begin{tikzpicture}[node distance=2cm]
     \node (start) [startstop] {开始};
-    \node (proc1) [process, below of=start] {函数执行路径拼接};
-    \node (dec1)  [decision, below of=proc1, yshift=-0.5cm] {条件以描述符打开文件？};
-    \node (proc2) [process, below of=dec1, yshift=-0.5cm] {打开文件描述符};
-    \node (proc3) [process, right of=dec1, xshift=4cm] {错误信息日志处理};
-    \node (end)   [startstop, below of=proc2, yshift=-0.5cm] {返回函数执行标记};
+    \node (proc1) [process, below=of start] {函数执行路径拼接};
+    \node (dec1)  [decision, below=of proc1, yshift=-0.5cm] {条件以描述符打开文件？};
+    \node (proc2) [process, below=of dec1, yshift=-0.5cm] {打开文件描述符};
+    \node (proc3) [process, right=of dec1, xshift=4cm] {错误信息日志处理};
+    \node (end)   [startstop, below=of proc2, yshift=-0.5cm] {返回函数执行标记};
 
     \draw [arrow] (start) -- (proc1);
     \draw [arrow] (proc1) -- (dec1);
