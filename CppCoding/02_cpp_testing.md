@@ -305,8 +305,8 @@ add_custom_target(run_all_tests
 ```bash
 # Step 0: 程序验证（在正式测试前进行）
 mkdir -p tests/cppTest/verify
-g++ -fsyntax-only src/cpp/[FunctionName].cpp > tests/cppTest/verify/[FunctionName]_syntax.txt 2>&1
-g++ -c src/cpp/[FunctionName].cpp -o /tmp/[FunctionName].o > tests/cppTest/verify/[FunctionName]_compile.txt 2>&1
+g++ -std=c++20 -fsyntax-only -Iinclude/cpp src/cpp/[FunctionName].cpp > tests/cppTest/verify/[FunctionName]_syntax.txt 2>&1
+g++ -std=c++20 -c -Iinclude/cpp src/cpp/[FunctionName].cpp -o /tmp/[FunctionName].o > tests/cppTest/verify/[FunctionName]_compile.txt 2>&1
 
 # Step 1: 编译项目（含测试目标）
 cmake -DBUILD_TESTING=ON -B build

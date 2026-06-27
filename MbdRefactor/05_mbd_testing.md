@@ -334,7 +334,7 @@ mkdir -p tests/mbdTest/verify
 # 检查 FuncModule 架构规范
 python3 [PromptDir]/script/check_funcmodule_arch.py src/mbd/ > tests/mbdTest/verify/architecture_check.txt 2>&1
 # 编译验证
-g++ -fsyntax-only src/mbd/[ModuleName].cpp > tests/mbdTest/verify/[ModuleName]_syntax.txt 2>&1
+g++ -std=c++20 -fsyntax-only -Iinclude/mbd -Iinclude/cpp src/mbd/[ModuleName].cpp > tests/mbdTest/verify/[ModuleName]_syntax.txt 2>&1
 
 # Step 1: 编译项目（含 MBD 测试目标）
 cmake -DBUILD_TESTING=ON -DENABLE_MBD_TESTS=ON -B build
