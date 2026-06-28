@@ -1,11 +1,11 @@
-# CppDesign - 设计文档生成 Prompt
+# FuncDesign - 设计文档生成 Prompt
 
 本文件夹包含 LaTeX 格式函数设计文档生成的 Prompt 模板。
 
 ## 📁 文件结构
 
 ```
-CppDesign/
+FuncDesign/
 ├── README.md                 # 本说明文件
 └── 03_design_doc_gen.md      # LaTeX 格式函数设计文档生成
 ```
@@ -42,7 +42,7 @@ CppDesign/
 
 ### 输出产物
 ```
-doc/
+[ProjectName]/doc/
 └── [根据源文件路径映射的子目录]/
     ├── [FunctionName].tex    # LaTeX 源文件
     └── [FunctionName].pdf    # 编译后的 PDF 文档
@@ -57,5 +57,5 @@ doc/
 ## 🔗 相关链接
 
 - **主入口**: `../00_gaasdPrompt.md` - 全流程编排 Prompt（总调度入口）
-- **上一步**: `../CppCoding/` - C++ 代码改写与测试
+- **上一步**: `../FuncCoding/` - C++ 代码改写与测试
 - **下一步**: `../MbdRefactor/04_mbd_refactor.md` - MBD 架构重构

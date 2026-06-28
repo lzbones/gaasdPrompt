@@ -9,10 +9,10 @@
 ```
 .
 ├── 00_gaasdPrompt.md         # 全流程编排主入口
-├── CppCoding/                # C++ 代码改写与测试
-│   ├── 01_cpp_coding.md      # C++ 面向过程代码改写规范
-│   └── 02_cpp_testing.md     # C++ 测试生成与验证规范
-├── CppDesign/                # 设计文档生成
+├── FuncCoding/                # C++ 代码改写与测试
+│   ├── 01_func_coding.md      # C++ 面向过程代码改写规范
+│   └── 02_func_testing.md     # C++ 测试生成与验证规范
+├── FuncDesign/                # 设计文档生成
 │   └── 03_design_doc_gen.md  # LaTeX 格式函数设计文档生成
 ├── MbdRefactor/              # MBD 重构与测试
 │   ├── 04_mbd_refactor.md    # FuncModule 架构重构规范
@@ -40,29 +40,29 @@
 
 | 步骤 | 功能 | 输入 | 输出 |
 |------|------|------|------|
-| Step 01 | C++ 代码改写 | 原始 C++ 代码 | 面向过程规范的 C++ 代码 |
-| Step 02 | C++ 测试生成 | Step 01 输出的代码 | `tests/cppTest/` - 报告、用例与图表 |
-| Step 03 | 设计文档生成 | Step 01 输出的代码 | `doc/` - LaTeX 与 PDF 设计文档 |
-| Step 04 | MBD 架构重构 | Step 01 输出的代码 | `src/mbd/`, `include/mbd/`, `models/` |
-| Step 05 | MBD 测试验证 | Step 04 输出的代码 | `tests/mbdTest/` - 报告、用例与图表 |
+| Step 01 | C++ 代码改写 | 原始 C++ 代码 | `[ProjectName]/src/func/`, `[ProjectName]/include/func/` |
+| Step 02 | C++ 测试生成 | Step 01 输出的代码 | `[ProjectName]/tests/funcTest/` - 报告、用例与图表 |
+| Step 03 | 设计文档生成 | Step 01 输出的代码 | `[ProjectName]/doc/` - LaTeX 与 PDF 设计文档 |
+| Step 04 | MBD 架构重构 | Step 01 输出的代码 | `[ProjectName]/src/mbd/`, `[ProjectName]/include/mbd/`, `[ProjectName]/models/` |
+| Step 05 | MBD 测试验证 | Step 04 输出的代码 | `[ProjectName]/tests/mbdTest/` - 报告、用例与图表 |
 
 ---
 
 ## 📂 各文件夹说明
 
-### CppCoding/
+### FuncCoding/
 包含 C++ 面向过程代码改写和测试生成的 Prompt 模板。
-- **01_cpp_coding.md**: 定义面向过程编程规范（SSA、单一出口原则等），输出到 `src/cpp/`, `include/cpp/`
-- **02_cpp_testing.md**: 生成单元测试、验证报告和可视化脚本，输出到 `tests/cppTest/`
+- **01_func_coding.md**: 定义面向过程编程规范（SSA、单一出口原则等），输出到 `[ProjectName]/src/func/`, `[ProjectName]/include/func/`
+- **02_func_testing.md**: 生成单元测试、验证报告和可视化脚本，输出到 `[ProjectName]/tests/funcTest/`
 
-### CppDesign/
+### FuncDesign/
 包含 LaTeX 格式函数设计文档生成的 Prompt 模板。
-- **03_design_doc_gen.md**: 根据源代码自动生成符合企业规范的 LaTeX 设计文档，输出到 `doc/`
+- **03_design_doc_gen.md**: 根据源代码自动生成符合企业规范的 LaTeX 设计文档，输出到 `[ProjectName]/doc/`
 
 ### MbdRefactor/
 包含 MBD FuncModule 架构重构和测试的 Prompt 模板。
-- **04_mbd_refactor.md**: 将原始 C++ 代码重构为 C++20 FuncModule 架构，输出到 `src/mbd/`, `include/mbd/`, `models/`
-- **05_mbd_testing.md**: 为 FuncModule 架构代码生成测试用例和验证报告，输出到 `tests/mbdTest/`
+- **04_mbd_refactor.md**: 将原始 C++ 代码重构为 C++20 FuncModule 架构，输出到 `[ProjectName]/src/mbd/`, `[ProjectName]/include/mbd/`, `[ProjectName]/models/`
+- **05_mbd_testing.md**: 为 FuncModule 架构代码生成测试用例和验证报告，输出到 `[ProjectName]/tests/mbdTest/`
 
 ### script/
 包含用于自动化开发流程、测试验证与文档编译的 Python 脚本。
@@ -79,15 +79,15 @@
 ```
 project_root/
 ├── src/                          # 源代码目录（扁平化存放）
-│   ├── cpp/                      # 普通 C++ 源代码（一函数一文件，无子目录）
+│   ├── func/                      # 普通 C++ 源代码（一函数一文件，无子目录）
 │   └── mbd/                      # MBD FuncModule 架构代码（一类一文件，无子目录）
 ├── include/                      # 头文件目录（扁平化存放）
-│   ├── cpp/                      # 普通 C++ 头文件（一函数一头文件，无子目录）
+│   ├── func/                      # 普通 C++ 头文件（一函数一头文件，无子目录）
 │   └── mbd/                      # MBD FuncModule 架构头文件（一类一头文件，无子目录）
 ├── models/                       # MBD 拓扑蓝图（仅 MBD 模块，无子目录）
 │   └── [ModuleName].json
 ├── tests/                        # 测试相关文件（与 src 同级）
-│   ├── cppTest/                  # C++ 测试结果
+│   ├── funcTest/                  # C++ 测试结果
 │   │   ├── unit/                 # 函数级单元测试代码和用例数据（按函数名建子目录）
 │   │   │   └── [FunctionName]/
 │   │   │       └── output/   # 可视化输出子目录（存放绘图脚本与结果图表）
@@ -133,5 +133,5 @@ project_root/
 
 | 类型 | 源代码 | 头文件 | 测试文件 |
 |------|--------|--------|----------|
-| **普通 C++** | `src/cpp/` | `include/cpp/` | `tests/cppTest/` |
-| **MBD 架构** | `src/mbd/` | `include/mbd/` | `tests/mbdTest/` |
+| **普通 C++** | `[ProjectName]/src/func/` | `[ProjectName]/include/func/` | `[ProjectName]/tests/funcTest/` |
+| **MBD 架构** | `[ProjectName]/src/mbd/` | `[ProjectName]/include/mbd/` | `[ProjectName]/tests/mbdTest/` |

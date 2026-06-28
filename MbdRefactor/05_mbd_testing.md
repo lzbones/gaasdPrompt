@@ -11,11 +11,11 @@
 ### 1. 程序验证（Verify）- 新增步骤
 - **执行时机**：在正式测试之前进行
 - **验证内容**：验证重构的代码是否符合 Step 04（`MbdRefactor/04_mbd_refactor.md`）中定义的 FuncModule 架构规范要求
-- **输出产物**：验证报告保存到 `tests/mbdTest/verify/[ModuleName]_verify.txt`
+- **输出产物**：验证报告保存到 `[ProjectName]/tests/mbdTest/verify/[SubModuleName]_verify.txt`
 
 ### 2. MBD 代码目录规范
-- **头文件位置**: `include/mbd/[ModuleName].hpp`
-- **源文件位置**: `src/mbd/[ModuleName].cpp`
+- **头文件位置**: `[ProjectName]/include/mbd/[SubModuleName].hpp`
+- **源文件位置**: `[ProjectName]/src/mbd/[SubModuleName].cpp`
 
 ### 2. 验证检查清单（Checklist）
 在生成验证报告时，必须逐项检查以下规范符合性：
@@ -50,7 +50,7 @@
 ### 2. Traits 级单元测试（叶子节点测试）
 - **测试对象**：每个继承自 `FuncModule` 的叶子节点类。
 - **测试重点**：验证 `run()` 方法在给定 `Input` + `Param` + `State` 下是否产生正确的 `Output`。
-- **用例对齐要求（与 CPP 对齐）**：MBD 版本的测试必须在与 CPP 版本完全相同的测试用例输入（Input）、参数（Param）和初始状态（State）下进行，以对比验证 MBD 改写/重构后的正确性。
+- **用例对齐要求（与函数版本对齐）**：MBD 版本的测试必须在与函数（Func）版本完全相同的测试用例输入（Input）、参数（Param）和初始状态（State）下进行，以对比验证 MBD 改写/重构后的正确性。
 - **测试用例保存**：使用 JSON 格式存储，与 Traits 结构体一一对应。
 
 ### 3. 复合模块集成测试（级联测试）
@@ -70,45 +70,46 @@
 在开始测试之前，请确保项目遵循以下目录结构：
 
 ```
-project_root/
-├── include/                          # 头文件
-│   ├── cpp/                          # 普通 C++ 头文件
-│   └── mbd/                          # MBD FuncModule 架构头文件
-├── src/                              # 源文件
-│   ├── cpp/                          # 普通 C++ 源代码
-│   └── mbd/                          # MBD FuncModule 架构代码
-├── models/                           # MBD 图形化拓扑蓝图（JSON 格式）
-├── tests/                            # 测试相关文件（与 src 同级）
-│   ├── cppTest/                      # C++ 测试相关文件（结构见 ../CppCoding/02_cpp_testing.md）
-│   └── mbdTest/                      # MBD 测试相关文件（结构见 ../MbdRefactor/05_mbd_testing.md）
-│       ├── unit/                     # Traits 级单元测试代码和用例数据（按模块名建子目录）
-│       │   └── [ModuleName]/
-│       │       ├── [ModuleName]_test.cpp     # 单元测试代码
-│       │       ├── [ModuleName]_cases.json   # 测试用例数据（JSON 格式）
-│       │       └── output/           # 可视化输出子目录（存放绘图脚本与结果图表）
-│       │           ├── plot_[ModuleName].py    # 画图程序
-│       │           └── [ModuleName]_response.png # 可视化输出图表（阶跃响应等）
-│       ├── verify/                   # 程序验证结果
-│       │   ├── [ModuleName]_verify.txt       # 验证报告
-│       │   └── funcmodule_arch_check.txt     # FuncModule 架构规范检查清单
-│       └── Integration/              # 集成测试目录
-├── build/                          # 编译输出目录（与 src 同级）
-└── CMakeLists.txt                  # 构建配置（含测试目标）
+[ProjectName]/                        # 大组件/大元件独立工程文件夹（如 KalmanFilter/、PIDController/）
+├── CMakeLists.txt                    # 构建配置（含测试目标）
+├── include/                          # 头文件（扁平化存放，无子目录）
+│   ├── func/                          # 普通 C++ 头文件（如 matrixMultiply.hpp）
+│   └── mbd/                          # MBD FuncModule 架构头文件（如 MatrixMultiply.hpp）
+├── src/                              # 源文件（扁平化存放，无子目录）
+│   ├── func/                          # 普通 C++ 源代码（如 matrixMultiply.cpp）
+│   └── mbd/                          # MBD FuncModule 架构代码（如 MatrixMultiply.cpp）
+├── models/                           # MBD 拓扑蓝图（仅包含当前大组件 of the 拓扑 JSON，无子目录）
+│   └── [ProjectName].json
+├── build/                            # 独立的编译输出目录
+└── tests/                            # 测试相关文件
+    ├── funcTest/                      # C++ 测试相关文件（结构见 ../FuncCoding/02_func_testing.md）
+    └── mbdTest/                      # MBD 测试相关文件
+        ├── unit/                     # Traits 级单元测试代码和用例数据（按具体子类名建子目录）
+        │   └── [SubModuleName]/
+        │       ├── [SubModuleName]_test.cpp     # 单元测试代码
+        │       ├── [SubModuleName]_cases.json   # 测试用例数据（JSON 格式）
+        │       └── output/           # 可视化输出子目录（存放绘图脚本与结果图表）
+        │           ├── plot_[SubModuleName].py    # 画图程序
+        │           └── [SubModuleName]_response.png # 可视化输出图表
+        ├── verify/                   # 程序验证结果
+        │   ├── [SubModuleName]_verify.txt       # 验证报告
+        │   └── funcmodule_arch_check.txt     # FuncModule 架构规范检查清单
+        └── Integration/              # 集成测试目录
 ```
 
 > [!IMPORTANT]
 > **【源文件注册与编译要求（CRITICAL）】**：
-> 当您在工程中新增或重构了 MBD 算法源文件（例如新建了 `src/mbd/PIDController.cpp`），**必须同步更新项目根目录下的 `CMakeLists.txt`**。请确保将新生成的源文件注册进对应的静态库目标（如 `control_lib`）的源文件列表中（或通过模板自动列入），否则集成测试在链接时会报 `undefined reference` 未定义符号错误。
+> 当您在工程中新增或重构了 MBD 算法源文件（例如新建了 `[ProjectName]/src/mbd/PIDController.cpp`），**必须同步更新组件工程根目录下的 `CMakeLists.txt`**。请确保将新生成的源文件注册进对应的静态库目标（如 `control_lib`）的源文件列表中（或通过模板自动列入），否则集成测试在链接时会报 `undefined reference` 未定义符号错误。
 
 ### 2. 测试流程说明
 1. **验证阶段 (verify/)**：在测试之前，先对重构的 MBD 程序进行验证，检查是否符合 Step 04（`MbdRefactor/04_mbd_refactor.md`）中定义的 FuncModule 架构规范要求。
-2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据。**目录结构与可视化要求**：每个模块都必须进行测试，且在 `unit/` 目录下必须先按模块名创建独立的子目录（如 `unit/[ModuleName]/`），然后再将对应的测试代码、测试用例放入该子目录下。此外，每个单元测试目录下必须建立 `output/` 子目录（如 `unit/[ModuleName]/output/`），用于存放该单元测试对应的绘图 Python 程序及其输出的图表。
+2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据。**目录结构与可视化要求**：每个模块都必须进行测试，且在 `[ProjectName]/tests/mbdTest/unit/` 目录下必须先按子模块名创建独立的子目录（如 `unit/[SubModuleName]/`），然后再将对应的测试代码、测试用例放入该子目录下。此外，每个单元测试目录下必须建立 `output/` 子目录（如 `unit/[SubModuleName]/output/`），用于存放该单元测试对应的绘图 Python 程序及其输出的图表。
 3. **集成测试阶段 (Integration/)**：集成测试及其输出保存在此目录，代替原本的顶层 output 目录。
 
-### 3. 验证报告模板（tests/mbdTest/verify/[ModuleName]_verify.txt）
+### 3. 验证报告模板（[ProjectName]/tests/mbdTest/verify/[SubModuleName]_verify.txt）
 ```
 ═══════════════════════════════════════
-  [ModuleName] FuncModule 架构验证报告
+  [SubModuleName] FuncModule 架构验证报告
 ═══════════════════════════════════════
 验证依据：MbdRefactor/04_mbd_refactor.md - MBD FuncModule 架构重构规范
 
@@ -144,7 +145,7 @@ project_root/
 ```
 
 ### 3. 测试用例 JSON 结构（针对 Traits 模块）
-每个模块必须在 `tests/mbdTest/unit/[ModuleName]/` 目录下拥有一个对应的 JSON 文件：
+每个模块必须在 `[ProjectName]/tests/mbdTest/unit/[SubModuleName]/` 目录下拥有一个对应的 JSON 文件：
 
 ```json
 {
@@ -180,10 +181,10 @@ project_root/
 ### 4. 测试程序模板（unit/[ModuleName]_test.cpp）
 ```cpp
 /**
- * @file [ModuleName]_test.cpp
- * @brief [ModuleName] 模块的 Traits 级单元测试
+ * @file [SubModuleName]_test.cpp
+ * @brief [SubModuleName] 模块的 Traits 级单元测试
  * 
- * 测试用例来源：tests/mbdTest/unit/[ModuleName]/[ModuleName]_cases.json
+ * 测试用例来源：[ProjectName]/tests/mbdTest/unit/[SubModuleName]/[SubModuleName]_cases.json
  */
 
 #include <iostream>
@@ -258,13 +259,13 @@ int main() {
 ## 三、MBD 复合模块测试与图形化映射
 
 ### 1. 基于 models/*.json 的自动测试生成
-对于复合模块，可以利用其 `models/[ModuleName].json` 拓扑文件自动生成测试骨架：
+对于复合模块，可以利用其 `[ProjectName]/models/[ProjectName].json` 拓扑文件自动生成测试骨架：
 
 ```python
 #!/Users/qingxu/.ai-env/bin/python3
 """
 根据 MBD JSON 拓扑自动生成复合模块测试代码
-使用方法：python generate_mbd_test.py models/PIDController.json
+使用方法：python generate_mbd_test.py models/[ProjectName].json
 """
 
 import json
@@ -304,7 +305,7 @@ if __name__ == '__main__':
 
 > [!IMPORTANT]
 **【源文件注册与编译要求（CRITICAL）】**：
-当您在工程中新增或重构了 MBD 算法源文件（例如新建了 `src/mbd/PIDController.cpp`），**必须同步更新项目根目录下的 `CMakeLists.txt`**。请确保将新生成的源文件注册进对应的静态库目标（如 `control_lib`）的源文件列表中（或通过模板自动列入），否则集成测试在链接时会报 `undefined reference` 未定义符号错误。
+当您在工程中新增或重构了 MBD 算法源文件（例如新建了 `[ProjectName]/src/mbd/PIDController.cpp`），**必须同步更新组件工程根目录下的 `CMakeLists.txt`**。请确保将新生成的源文件注册进对应的静态库目标（如 `control_lib`）的源文件列表中（或通过模板自动列入），否则集成测试在链接时会报 `undefined reference` 未定义符号错误。
 
 ## 四、CMake MBD 测试配置
 
@@ -316,7 +317,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 【重要：避免 macOS 大小写不敏感冲突】
 # 严禁使用全局 include_directories() 混合包含路径。
 # 必须使用 target_include_directories() 针对不同目标隔离包含路径：
-# MBD 库与测试目标优先仅包含 include/mbd（如必须包含 include/cpp，请务必将 include/mbd 放在最前面！）
+# MBD 库与测试目标优先仅包含 include/mbd（如必须包含 include/func，请务必将 include/mbd 放在最前面！）
 
 enable_testing()
 
@@ -342,12 +343,14 @@ add_custom_target(mbd_all_tests
 
 ### 1. 分步测试命令
 ```bash
+# 运行前需进入当前组件所在的文件夹，例如: cd [ProjectName]
+
 # Step 0: 程序验证（在正式测试前进行）
 mkdir -p tests/mbdTest/verify
 # 检查 FuncModule 架构规范
 python3 [PromptDir]/script/check_funcmodule_arch.py src/mbd/ > tests/mbdTest/verify/architecture_check.txt 2>&1
 # 编译验证
-g++ -std=c++20 -fsyntax-only -Iinclude/mbd -Iinclude/cpp src/mbd/[ModuleName].cpp > tests/mbdTest/verify/[ModuleName]_syntax.txt 2>&1
+g++ -std=c++20 -fsyntax-only -Iinclude/mbd -Iinclude/func src/mbd/[SubModuleName].cpp > tests/mbdTest/verify/[SubModuleName]_syntax.txt 2>&1
 
 # Step 1: 编译项目（含 MBD 测试目标）
 cmake -DBUILD_TESTING=ON -DENABLE_MBD_TESTS=ON -B build
@@ -397,7 +400,7 @@ cd build && ctest --output-on-failure --verbose > ../tests/mbdTest/Integration/m
   ```
 
 ### 3. 可视化输出规范补充
-- **README 引用路径**：如 `tests/mbdTest/unit/[ModuleName]/output/pid_step_response.png`（相对路径）
+- **README 引用路径**：如 `[ProjectName]/tests/mbdTest/unit/[SubModuleName]/output/pid_step_response.png`（相对路径，基于项目根目录）
 
 ### 4. Python 绘图脚本环境约束
 所有用于 MBD 测试结果可视化的 Python 脚本必须遵循以下规范：
@@ -446,7 +449,7 @@ def load_simulation_data(json_path):
 def plot_step_response(data, output_dir=None):
     # 每一个模块的测试绘图结果保存在该模块单元测试下的 output/ 子文件夹中
     if output_dir is None:
-        output_dir = os.path.join('mbdTest/unit', data['module_name'], 'output')
+        output_dir = os.path.join('tests/mbdTest/unit', data['module_name'], 'output')  # 注意：在 [ProjectName] 目录下运行，故使用相对路径
     os.makedirs(output_dir, exist_ok=True)
     
     time = np.array(data['time'])

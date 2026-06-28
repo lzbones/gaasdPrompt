@@ -26,24 +26,24 @@
 
 ```bash
 # 方式 1：直接传入 .tex 文件路径
-python script/compile_latex.py doc/[FunctionName]/[FunctionName].tex
+python script/compile_latex.py [ProjectName]/doc/[FunctionName]/[FunctionName].tex
 
 # 方式 2：传入源代码路径，自动映射到对应的 .tex 文件
-python script/compile_latex.py src/cpp/[FunctionName].cpp
+python script/compile_latex.py [ProjectName]/src/func/[FunctionName].cpp
 
 # 方式 3：指定自定义输出目录
-python script/compile_latex.py doc/[FunctionName]/[FunctionName].tex /custom/output/dir
+python script/compile_latex.py [ProjectName]/doc/[FunctionName]/[FunctionName].tex /custom/output/dir
 ```
 
 ### 路径映射规则
 
-脚本支持将 C/C++ 源代码路径自动映射到 `doc/` 目录下的对应 `.tex` 文件：
+脚本支持将 C/C++ 源代码路径自动映射到组件物理隔离的 `doc/` 目录下的对应 `.tex` 文件：
 
 | 源码路径 | → | LaTeX 路径 |
 |----------|---|------------|
-| `src/cpp/[FunctionName].cpp` | → | `doc/[FunctionName]/[FunctionName].tex` |
-| `src/mbd/[ModuleName].cpp` | → | `doc/[ModuleName]/[ModuleName].tex` |
-| `include/cpp/[FunctionName].hpp` | → | `doc/[FunctionName]/[FunctionName].tex` |
+| `[ProjectName]/src/func/[FunctionName].cpp` | → | `[ProjectName]/doc/[FunctionName]/[FunctionName].tex` |
+| `[ProjectName]/src/mbd/[SubModuleName].cpp` | → | `[ProjectName]/doc/[SubModuleName]/[SubModuleName].tex` |
+| `[ProjectName]/include/func/[FunctionName].hpp` | → | `[ProjectName]/doc/[FunctionName]/[FunctionName].tex` |
 
 ### 标题自动修正映射
 
@@ -116,8 +116,8 @@ python script/run_pipeline.py
 1. **CMake Configure**: `cmake -S . -B build`
 2. **CMake Build**: `cmake --build build`
 3. **Run Tests**: `ctest --output-on-failure`
-4. **Generate C++ Plot**: 运行 `tests/cppTest/unit/[name]/output/plot_[name].py`
-5. **Generate MBD Plot**: 运行 `tests/mbdTest/unit/[Name]/output/plot_[Name].py`
+4. **Generate C++ Function Plot**: 运行 `[ProjectName]/tests/funcTest/unit/[name]/output/plot_[name].py`（由脚本自动定位并运行）
+5. **Generate MBD Plot**: 运行 `[ProjectName]/tests/mbdTest/unit/[Name]/output/plot_[Name].py`（由脚本自动定位并运行）
 6. **Compile LaTeX**: 运行 `compile_latex.py` 编译文档
 
 ### 输出示例
@@ -132,7 +132,7 @@ Processing Module: add (MBD: Add)
 [add] Building...
 [add] Running Tests...
 [add] Tests Passed!
-[add] Generating C++ Plot...
+[add] Generating C++ Function Plot...
 [add] Generating MBD Plot...
 [add] Compiling LaTeX document...
 [add] LaTeX document compiled successfully!

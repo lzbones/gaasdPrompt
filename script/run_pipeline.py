@@ -19,7 +19,7 @@ PROJECTS = [
     }
 ]
 
-ROOT = Path(__file__).parent.parent.parent
+ROOT = Path(__file__).parent.parent
 PYTHON = str(Path("~/.ai-env/bin/python3").expanduser())
 
 def run_cmd(args, cwd=None):
@@ -78,19 +78,19 @@ def main():
             
             print(f"\n  --- Processing Function: {name} (MBD: {Name}) ---")
             
-            # C++ Plot
-            plot_cpp_script = module_dir / "tests" / "cppTest" / "unit" / name / "output" / f"plot_{name}.py"
-            json_cpp_cases = module_dir / "tests" / "cppTest" / "unit" / name / f"{name}_cases.json"
-            if plot_cpp_script.exists():
-                print(f"  [{name}] Generating C++ Plot...")
-                code, out, err = run_cmd([PYTHON, str(plot_cpp_script), str(json_cpp_cases)], cwd=module_dir)
+            # C++ Function Plot
+            plot_func_script = module_dir / "tests" / "funcTest" / "unit" / name / "output" / f"plot_{name}.py"
+            json_func_cases = module_dir / "tests" / "funcTest" / "unit" / name / f"{name}_cases.json"
+            if plot_func_script.exists():
+                print(f"  [{name}] Generating C++ Function Plot...")
+                code, out, err = run_cmd([PYTHON, str(plot_func_script), str(json_func_cases)], cwd=module_dir)
                 if code != 0:
-                    print(f"  [{name}] C++ Plot generation failed:\n{err}")
-                    summary.append({"name": f"{proj_name}:::{name}", "step": "C++ Plot", "status": "FAIL", "msg": err})
+                    print(f"  [{name}] C++ Function Plot generation failed:\n{err}")
+                    summary.append({"name": f"{proj_name}:::{name}", "step": "C++ Function Plot", "status": "FAIL", "msg": err})
                 else:
-                    print(f"  [{name}] C++ Plot generated.")
+                    print(f"  [{name}] C++ Function Plot generated.")
             else:
-                print(f"  [{name}] No C++ plot script found at: {plot_cpp_script.name}")
+                print(f"  [{name}] No C++ plot script found at: {plot_func_script.name}")
                 
             # MBD Plot
             plot_mbd_script = module_dir / "tests" / "mbdTest" / "unit" / Name / "output" / f"plot_{Name}.py"

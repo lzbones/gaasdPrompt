@@ -18,9 +18,9 @@
 
 请在以下步骤前勾选（`[x]`）你需要执行的环节，未勾选的将跳过：
 
-- [x] **Step 01 — C++ 代码改写** · `CppCoding/01_cpp_coding.md`
-- [x] **Step 02 — C++ 测试生成** · `CppCoding/02_cpp_testing.md`
-- [x] **Step 03 — 函数设计文档生成** · `CppDesign/03_design_doc_gen.md`
+- [x] **Step 01 — C++ 代码改写** · `FuncCoding/01_func_coding.md`
+- [x] **Step 02 — C++ 测试生成** · `FuncCoding/02_func_testing.md`
+- [x] **Step 03 — 函数设计文档生成** · `FuncDesign/03_design_doc_gen.md`
 - [x] **Step 04 — MBD 架构重构** · `MbdRefactor/04_mbd_refactor.md`
 - [x] **Step 05 — MBD 测试验证** · `MbdRefactor/05_mbd_testing.md`
 
@@ -52,11 +52,11 @@
 
 | 步骤 | 输入来源 | 输出产物 | 输出目录 |
 |------|----------|----------|----------|
-| **01** C++ 改写 | 用户原始 C++ 代码 | 面向过程规范的 C++ 代码 | `src/cpp/`, `include/cpp/` |
-| **02** C++ 测试 | Step 01 输出的代码 | 验证报告、单元测试、可视化输出 | `tests/cppTest/` |
-| **03** 设计文档 | Step 01 输出的代码 | LaTeX 源文件 + PDF | `doc/` |
-| **04** MBD 重构 | Step 01 输出的代码 | FuncModule 架构 C++ 代码 | `src/mbd/`, `include/mbd/`, `models/` |
-| **05** MBD 测试 | Step 04 输出的代码 | 验证报告、单元测试、可视化输出 | `tests/mbdTest/` |
+| **01** C++ 改写 | 用户原始 C++ 代码 | 面向过程规范的 C++ 代码 | `[ProjectName]/src/func/`, `[ProjectName]/include/func/` |
+| **02** C++ 测试 | Step 01 输出的代码 | 验证报告、单元测试、可视化输出 | `[ProjectName]/tests/funcTest/` |
+| **03** 设计文档 | Step 01 输出的代码 | LaTeX 源文件 + PDF | `[ProjectName]/doc/` |
+| **04** MBD 重构 | Step 01 输出的代码 | FuncModule 架构 C++ 代码 | `[ProjectName]/src/mbd/`, `[ProjectName]/include/mbd/`, `[ProjectName]/models/` |
+| **05** MBD 测试 | Step 04 输出的代码 | 验证报告、单元测试、可视化输出 | `[ProjectName]/tests/mbdTest/` |
 
 ### 3. 目录约定
 
@@ -64,10 +64,10 @@
 ```
 项目根目录/
 └── [PromptDir]/              # Prompt 文件夹（名称可自定义）
-    ├── CppCoding/            # C++ 代码改写与测试 Prompt
-    │   ├── 01_cpp_coding.md  # C++ 面向过程代码改写规范
-    │   └── 02_cpp_testing.md # C++ 测试生成与验证规范
-    ├── CppDesign/            # 设计文档生成 Prompt
+    ├── FuncCoding/            # C++ 代码改写与测试 Prompt
+    │   ├── 01_func_coding.md  # C++ 面向过程代码改写规范
+    │   └── 02_func_testing.md # C++ 测试生成与验证规范
+    ├── FuncDesign/            # 设计文档生成 Prompt
     │   └── 03_design_doc_gen.md # LaTeX 格式函数设计文档生成
     ├── MbdRefactor/          # MBD 重构与测试 Prompt
     │   ├── 04_mbd_refactor.md # FuncModule 架构重构规范
@@ -82,15 +82,15 @@
 ```
 项目根目录/
 ├── src/                      # 源代码目录（扁平化存放）
-│   ├── cpp/                  # 普通 C++ 源代码（一函数一文件，无子目录）
+│   ├── func/                  # 普通 C++ 源代码（一函数一文件，无子目录）
 │   └── mbd/                  # MBD FuncModule 架构代码（一类一文件，无子目录）
 ├── include/                  # 头文件目录（扁平化存放）
-│   ├── cpp/                  # 普通 C++ 头文件（一函数一头文件，无子目录）
+│   ├── func/                  # 普通 C++ 头文件（一函数一头文件，无子目录）
 │   └── mbd/                  # MBD FuncModule 架构头文件（一类一头文件，无子目录）
 ├── models/                   # MBD 拓扑蓝图（仅 MBD 模块，无子目录）
 │   └── [ModuleName].json
 ├── tests/                    # 测试相关文件（与 src/同级）
-│   ├── cppTest/              # C++ 测试结果
+│   ├── funcTest/              # C++ 测试结果
 │   │   ├── unit/             # 单元测试代码和用例数据（按函数名建子目录）
 │   │   │   └── [FunctionName]/
 │   │   │       └── output/   # 可视化输出子目录（存放绘图脚本与结果图表）
@@ -186,12 +186,12 @@ venv/
 
 ```
 for each step in [勾选的步骤序列]:
-    1. 读取 CppCoding/、CppDesign/ 或 MbdRefactor/ 下对应的 .md 文件
+    1. 读取 FuncCoding/、FuncDesign/ 或 MbdRefactor/ 下对应的 .md 文件
     2. 提取 ```markdown 代码块内的 Prompt 内容
     3. 加载该 Prompt 作为系统指令
     4. 使用上一步的输出作为当前步的输入（Step 01 使用用户提供的原始代码）
     5. 执行该步骤的所有子任务
-    6. 保存输出产物到约定目录（src/cpp/、src/mbd/、tests/cppTest/、tests/mbdTest/等）
+    6. 保存输出产物到组件工程的约定目录（如 [ProjectName]/src/func/、[ProjectName]/src/mbd/ 等）
     7. 记录输出摘要供下一步使用
 ```
 
@@ -208,21 +208,21 @@ for each step in [勾选的步骤序列]:
 执行步骤：Step 01 → Step 02 → Step 03 → Step 04 → Step 05
 
 输出产物：
-  📄 改写后代码：   src/cpp/[Function].cpp, include/cpp/[Function].hpp (Step 01)
-  🧪 C++ 测试：     tests/cppTest/
-                    ├── unit/[Function]/[Function]_test.cpp, [Function]_cases.json
-                    ├── unit/[Function]/output/[Function]_plot.png, plot_[Function].py (Step 02)
-                    ├── verify/[Function]_verify.txt
+  📄 改写后代码：   [ProjectName]/src/func/[FunctionName].cpp, [ProjectName]/include/func/[FunctionName].hpp (Step 01)
+  🧪 C++ 测试：     [ProjectName]/tests/funcTest/
+                    ├── unit/[FunctionName]/[FunctionName]_test.cpp, [FunctionName]_cases.json
+                    ├── unit/[FunctionName]/output/[FunctionName]_plot.png, plot_[FunctionName].py (Step 02)
+                    ├── verify/[FunctionName]_verify.txt
                     └── Integration/ （集成测试）
-  📝 设计文档：     doc/[Function]/[Function].pdf (Step 03)
-  🔧 MBD 代码：     src/mbd/[Module].cpp, include/mbd/[Module].hpp (Step 04)
-                    models/[Module].json（拓扑蓝图）
-  ✅ MBD 测试：     tests/mbdTest/
-                    ├── unit/[Module]/[Module]_test.cpp, [Module]_cases.json
-                    ├── unit/[Module]/output/[Module]_response.png, plot_[Module].py (Step 05)
-                    ├── verify/[Module]_verify.txt （规范验证报告）与 architecture_check.txt （架构合规检查报告）
+  📝 设计文档：     [ProjectName]/doc/[FunctionName]/[FunctionName].pdf (Step 03)
+  🔧 MBD 代码：     [ProjectName]/src/mbd/[SubModuleName].cpp, [ProjectName]/include/mbd/[SubModuleName].hpp (Step 04)
+                    [ProjectName]/models/[ProjectName].json（组件拓扑蓝图）
+  ✅ MBD 测试：     [ProjectName]/tests/mbdTest/
+                    ├── unit/[SubModuleName]/[SubModuleName]_test.cpp, [SubModuleName]_cases.json
+                    ├── unit/[SubModuleName]/output/[SubModuleName]_response.png, plot_[SubModuleName].py (Step 05)
+                    ├── verify/[SubModuleName]_verify.txt （规范验证报告）与 architecture_check.txt （架构合规检查报告）
                     └── Integration/ （集成测试）
-  📂 参考资料：     ref/ （存放与模块对应的参考资料，若无则为空）
+  📂 参考资料：     [ProjectName]/ref/ （存放与组件对应的参考资料，若无则为空）
 
 状态：全部成功 ✅
 ═══════════════════════════════════════
@@ -234,9 +234,9 @@ for each step in [勾选的步骤序列]:
 
 | 步骤 | 功能 | 文件路径（相对项目根目录） |
 |------|------|--------------------------|
-| Step 01 | C++ 面向过程代码改写 | `CppCoding/01_cpp_coding.md` |
-| Step 02 | C++ 测试生成与验证 | `CppCoding/02_cpp_testing.md` |
-| Step 03 | LaTeX 设计文档生成 | `CppDesign/03_design_doc_gen.md` |
+| Step 01 | C++ 面向过程代码改写 | `FuncCoding/01_func_coding.md` |
+| Step 02 | C++ 测试生成与验证 | `FuncCoding/02_func_testing.md` |
+| Step 03 | LaTeX 设计文档生成 | `FuncDesign/03_design_doc_gen.md` |
 | Step 04 | MBD FuncModule 架构重构 | `MbdRefactor/04_mbd_refactor.md` |
 | Step 05 | MBD 测试生成与验证 | `MbdRefactor/05_mbd_testing.md` |
 
@@ -255,9 +255,13 @@ for each step in [勾选的步骤序列]:
 - **组件（Component）**：由多个元件或其他组件通过拓扑关系构成的复合模块，包含子模块级联和数据路由逻辑。
 - **AI 生成内容**：后续将由 AI 编写所有元件和组件代码，AI 需严格区分二者并遵循相应规范。
 
-### 3. 函数模块目录结构（所有步骤）
-- **独立模块目录**：除src、include这两个文件夹之外，每个函数/功能模块在对应的分类目录下必须单独建立一个以其模块名命名的子目录（src、include这两个文件夹下的源文件和头文件除外，这两个文件夹下的文件是扁平化的）
-- **示例**：`src/cpp/calculateAcceleration.cpp`、`include/cpp/calculateAcceleration.hpp`、`tests/cppTest/unit/calculateAcceleration/calculateAcceleration_test.cpp`、`doc/calculateAcceleration/calculateAcceleration.pdf`
+### 3. 隔离文件夹与函数模块目录结构（所有步骤）
+- **隔离的组件级根目录（CRITICAL）**：每个大元件/大组件拥有一个独立的工程文件夹 `[ProjectName]` (例如 `KalmanFilter`、`PIDController`)。
+- **子函数目录规范**：在 `[ProjectName]` 下，`src/func`、`src/mbd`、`include/func`、`include/mbd` 均是扁平存放的。而在 `[ProjectName]/tests/funcTest/unit/`、`[ProjectName]/tests/mbdTest/unit/` 以及 `[ProjectName]/doc/` 目录下，仍需按具体的子函数/子元件名称单独建子目录隔离。
+- **示例**：
+  - 源文件/头文件：`KalmanFilter/src/func/matrixMultiply.cpp`、`KalmanFilter/include/func/matrixMultiply.hpp`
+  - 测试：`KalmanFilter/tests/funcTest/unit/matrixMultiply/matrixMultiply_test.cpp`
+  - 设计文档：`KalmanFilter/doc/matrixMultiply/matrixMultiply.pdf`
 
 ### 4. C/C++ 标准库优先使用规范（CRITICAL）
 - **不要重复造轮子**：如果 C/C++ 标准库或准标准库（如 STL）中已经有的功能，必须优先调用现有实现，禁止重新编写相同功能的代码。
@@ -276,14 +280,14 @@ for each step in [勾选的步骤序列]:
   - **优势**：这种“脚本生成脚本，脚本驱动验证”的二阶段设计，能够保证批量处理的一致性与 100% 的成功率。
 
 ### 6. 其他约束
-- **文件读取权限**：确保有读取 `CppCoding/`、`CppDesign/` 和 `MbdRefactor/` 目录下 .md 文件的权限
-- **源代码位置**：用户的 C/C++ 源代码默认位于 `src/cpp/` 目录下（或由用户指定路径）
-- **MBD 代码位置**：重构后的 MBD FuncModule 架构代码位于 `src/mbd/` 和 `include/mbd/` 目录
-- **设计文档输出**：Step 03 输出的 .tex 和 .pdf 文件位于 `doc/` 目录，子目录结构与 `src/cpp/` 保持一致
+- **文件读取权限**：确保有读取 `FuncCoding/`、`FuncDesign/` 和 `MbdRefactor/` 目录下 .md 文件的权限
+- **源代码位置**：用户的 C/C++ 源代码默认位于 `[ProjectName]/src/func/` 目录下（或由用户指定路径）
+- **MBD 代码位置**：重构后的 MBD FuncModule 架构代码位于 `[ProjectName]/src/mbd/` 和 `[ProjectName]/include/mbd/` 目录
+- **设计文档输出**：Step 03 输出的 .tex 和 .pdf 文件位于 `[ProjectName]/doc/` 目录，子目录结构与 `[ProjectName]/src/func/` 保持一致
 - **编译环境**：Step 03 需要 xelatex 和 TeX Live/MacTeX 环境
 - **Python 环境**：所有 Python 脚本使用 `~/.ai-env` 虚拟环境
 - **参考资料目录 (ref/)**：要求在生成的各模块根目录中，增加 `ref/` 文件夹（与 `src/`、`include/`、`tests/` 同级），用于存放与该模块对应的参考资料。如果用户提供，则放入该文件夹；若无则留空。
-- **CMake 头文件包含隔离与防大小写冲突约束 (CRITICAL)**：为了防止在 macOS 大小写不敏感文件系统上，`include/cpp/clampValue.hpp`（小驼峰）与 `include/mbd/ClampValue.hpp`（大驼峰）等发生同名冲突，**严禁使用全局 `include_directories()`** 混合包含路径。必须通过 `target_include_directories()` 针对不同 target 进行严格隔离：普通 C++ 库/测试目标仅包含 `include/cpp`；MBD 库/测试目标仅包含 `include/mbd`（若必须包含 `include/cpp`，则必须将 `include/mbd` 排在最前面）。
+- **CMake 头文件包含隔离与防大小写冲突约束 (CRITICAL)**：为了防止在 macOS 大小写不敏感文件系统上，`[ProjectName]/include/func/clampValue.hpp`（小驼峰）与 `[ProjectName]/include/mbd/ClampValue.hpp`（大驼峰）等发生同名冲突，**严禁使用全局 `include_directories()`** 混合包含路径。必须通过 `target_include_directories()` 针对不同 target 进行严格隔离：普通 C++ 库/测试目标仅包含其本身的 `include/func`；MBD 库/测试目标仅包含其本身的 `include/mbd`（若必须包含 `include/func`，则必须将 `include/mbd` 排在最前面）。
 
 ---
 

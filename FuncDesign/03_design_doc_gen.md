@@ -121,9 +121,9 @@
 - [ ] 确保中文字体正确配置（使用 xeCJK + SimSun/SimHei）
 - [ ] **设置章节编号规则**：使用层级编号（1 → 1.1 → 1.1.1）
 - [ ] **确定 .tex 文件的输出路径与其关联头文件映射关系**：
-  - **声明与实现分离的正常函数/组件/类**：仅生成一份文档。其 LaTeX 文件映射到以函数/模块名命名的独立子目录中（例如 `src/cpp/[FunctionName].cpp` 或 `src/mbd/[ModuleName].cpp` $\rightarrow$ `doc/[FunctionName]/[FunctionName].tex` / `doc/[ModuleName]/[ModuleName].tex`）。并且，必须在文档中同时注明其对应的头文件路径和源文件路径。
+  - **声明与实现分离的正常函数/组件/类**：仅生成一份文档。其 LaTeX 文件映射到以函数/模块名命名的独立子目录中（例如 `[ProjectName]/src/func/[FunctionName].cpp` 或 `[ProjectName]/src/mbd/[SubModuleName].cpp` $\rightarrow$ `[ProjectName]/doc/[FunctionName]/[FunctionName].tex`）。并且，必须在文档中同时注明其对应的头文件路径 and 源文件路径。
   - **只有声明头文件、无实现的外部接口/空虚函数**：**不编写设计文档**。
-  - **Header-only 的内联（inline）或模板（template）函数**：在头文件内实现。其设计文档同样映射到以函数名命名的独立子目录下（例如 `include/cpp/[FunctionName].hpp` $\rightarrow$ `doc/[FunctionName]/[FunctionName].tex`）。
+  - **Header-only 的内联（inline）或模板（template）函数**：在头文件内实现。其设计文档同样映射到以函数名命名的独立子目录下（例如 `[ProjectName]/include/func/[FunctionName].hpp` $\rightarrow$ `[ProjectName]/doc/[FunctionName]/[FunctionName].tex`）。
 - [ ] **更新文件更改记录**：若属于已有文档更新，必须在“文件更改记录”表格中增加一行，记录版本、日期、修改说明。同时，表格设计中必须包含一列“辅助AI”，记录所用 AI 模型的名称（例如 `Gemini 3.5 Flash`）。
 
 **输出**：完整的 .tex 源文件，保存到对应的映射子目录结构中
@@ -140,9 +140,9 @@ LaTeX to PDF 编译与自动修正、清理脚本
 使用方法：python [PromptDir]/script/compile_latex.py [tex_file.tex] [output_dir]
 
 根据 C/C++ 源代码路径自动映射到 doc/ 目录：
-  - src/cpp/[FunctionName].cpp  →  doc/[FunctionName]/[FunctionName].tex
-  - src/mbd/[ModuleName].cpp    →  doc/[ModuleName]/[ModuleName].tex
-  - include/cpp/[FunctionName].hpp  →  doc/[FunctionName]/[FunctionName].tex
+  - [ProjectName]/src/func/[FunctionName].cpp  →  [ProjectName]/doc/[FunctionName]/[FunctionName].tex
+  - [ProjectName]/src/mbd/[SubModuleName].cpp  →  [ProjectName]/doc/[SubModuleName]/[SubModuleName].tex
+  - [ProjectName]/include/func/[FunctionName].hpp  →  [ProjectName]/doc/[FunctionName]/[FunctionName].tex
 
 即使直接传入 .tex 路径也可正常工作。
 """
@@ -155,8 +155,8 @@ from pathlib import Path
 
 def src_to_doc_path(src_path: str, doc_root: str = "doc") -> str:
     """
-    根据“一函数一设计文档目录”规范，将 src/ 或 include/ 下的源代码路径（如 src/cpp/[FunctionName].cpp）
-    直接映射到 doc/[FunctionName]/[FunctionName].tex 路径。
+    根据组件工程物理隔离规范，将 [ProjectName]/src/func/[FunctionName].cpp
+    映射到 [ProjectName]/doc/[FunctionName]/[FunctionName].tex 路径。
     """
     p = Path(src_path)
     
@@ -165,8 +165,10 @@ def src_to_doc_path(src_path: str, doc_root: str = "doc") -> str:
         return str(p)
         
     base_name = p.stem
-    # 直接构建 doc/[FunctionName]/[FunctionName].tex
-    return str(Path(doc_root, base_name, f"{base_name}.tex"))
+    # 获取组件目录 [ProjectName]
+    proj_dir = p.parts[0] if len(p.parts) > 1 else "."
+    # 构建 [ProjectName]/doc/[FunctionName]/[FunctionName].tex
+    return str(Path(proj_dir, doc_root, base_name, f"{base_name}.tex"))
 
 
 def fix_tex_titles_in_file(tex_path: str):
@@ -868,10 +870,10 @@ Z & 出错函数：main/OpenFileFd/GetOpen/ \\
 LaTeX to PDF 编译与自动修正、清理脚本
 使用方法：python [PromptDir]/script/compile_latex.py [tex_file.tex] [output_dir]
 
-根据 C/C++ 源代码路径自动映射到 doc/ 目录：
-  - src/cpp/[FunctionName].cpp  →  doc/[FunctionName]/[FunctionName].tex
-  - src/mbd/[ModuleName].cpp    →  doc/[ModuleName]/[ModuleName].tex
-  - include/cpp/[FunctionName].hpp  →  doc/[FunctionName]/[FunctionName].tex
+# 根据 C/C++ 源代码路径自动映射到 doc/ 目录：
+#   - [ProjectName]/src/func/[FunctionName].cpp  →  [ProjectName]/doc/[FunctionName]/[FunctionName].tex
+#   - [ProjectName]/src/mbd/[SubModuleName].cpp  →  [ProjectName]/doc/[SubModuleName]/[SubModuleName].tex
+#   - [ProjectName]/include/func/[FunctionName].hpp  →  [ProjectName]/doc/[FunctionName]/[FunctionName].tex
 
 即使直接传入 .tex 路径也可正常工作。
 """
@@ -884,13 +886,13 @@ from pathlib import Path
 
 def src_to_doc_path(src_path: str, doc_root: str = "doc") -> str:
     """
-    根据“一函数一设计文档目录”规范，将 src/ 或 include/ 下的源代码路径（如 src/cpp/[FunctionName].cpp）
-    直接映射到 doc/[FunctionName]/[FunctionName].tex 路径。
+    根据组件工程物理隔离规范，将 [ProjectName]/src/func/[FunctionName].cpp
+    直接映射到 [ProjectName]/doc/[FunctionName]/[FunctionName].tex 路径。
     
     举例：
-      src_to_doc_path("src/cpp/xxx.cpp")      → "doc/xxx/xxx.tex"
-      src_to_doc_path("include/cpp/xxx.hpp")   → "doc/xxx/xxx.tex"
-      src_to_doc_path("doc/xxx/xxx.tex")       → "doc/xxx/xxx.tex"  （已是 doc 路径则不变）
+      src_to_doc_path("mathLibrary/src/func/xxx.cpp")      → "mathLibrary/doc/xxx/xxx.tex"
+      src_to_doc_path("mathLibrary/include/func/xxx.hpp")   → "mathLibrary/doc/xxx/xxx.tex"
+      src_to_doc_path("mathLibrary/doc/xxx/xxx.tex")       → "mathLibrary/doc/xxx/xxx.tex"  （已是 doc 路径则不变）
     
     Args:
         src_path: 源代码文件路径（相对或绝对）
@@ -906,8 +908,17 @@ def src_to_doc_path(src_path: str, doc_root: str = "doc") -> str:
         return str(p)
         
     base_name = p.stem
-    # 直接构建 doc/[FunctionName]/[FunctionName].tex
-    return str(Path(doc_root, base_name, f"{base_name}.tex"))
+    parts = p.parts
+    idx = -1
+    for name in ['src', 'include', 'doc']:
+        if name in parts:
+            idx = parts.index(name)
+            break
+    if idx != -1:
+        proj_prefix = Path(*parts[:idx])
+    else:
+        proj_prefix = Path(".")
+    return str(proj_prefix / doc_root / base_name / f"{base_name}.tex")
 
 
 def fix_tex_titles_in_file(tex_path: str):
@@ -1088,8 +1099,8 @@ bool OpenFileFd(void* I, void* O) {
 3. **Step 3**：流程步骤 + TikZ 框架
 4. **Step 4**：接口定义 + 3 个图形代码（含函数调用层次图）
 5. **Step 5**：测试用例表（正常/异常分开，各附符号说明子表）
-6. **Step 6**：完整 .tex 文件（含封面表格、目录、章节编号），保存到 doc/ 目录下以函数名命名的子目录中（例如 `doc/[FunctionName]/[FunctionName].tex`）
-7. **Step 7**：调用 Python 脚本编译 PDF（xelatex 运行 2 次以正确解析引用和图表编号），交付 doc/[FunctionName]/ 下的 .tex 源文件和 PDF 文件
+6. **Step 6**：完整 .tex 文件（含封面表格、目录、章节编号），保存到 [ProjectName]/doc/ 目录下以函数名命名的子目录中（例如 `[ProjectName]/doc/[FunctionName]/[FunctionName].tex`）
+7. **Step 7**：调用 Python 脚本编译 PDF（xelatex 运行 2 次以正确解析引用和图表编号），交付 [ProjectName]/doc/[FunctionName]/ 下的 .tex 源文件和 PDF 文件
 
 ---
 
@@ -1119,9 +1130,9 @@ bool OpenFileFd(void* I, void* O) {
 - [ ] **TikZ 图形编译无警告**
 - [ ] **中文字体渲染正常**（无乱码或缺失）
 - [ ] **函数接口注释格式符合 80 字符装饰线规范**
-- [ ] **.tex 文件路径符合独立模块子目录规范**：每个函数的设计文档都在 `doc/[FunctionName]/` 目录下（如 `doc/[FunctionName]/[FunctionName].tex` 和 `[FunctionName].pdf`）
-- [ ] **doc/ 目录自动创建**：输出前确保对应的 `doc/[FunctionName]/` 目录已存在
-- [ ] **.tex 和 .pdf 均位于 doc/ 下的模块子目录中**：PDF 文件与 .tex 在同一 `doc/[FunctionName]/` 目录中
+- [ ] **.tex 文件路径符合独立模块子目录规范**：每个函数的设计文档都在 `[ProjectName]/doc/[FunctionName]/` 目录下（如 `[ProjectName]/doc/[FunctionName]/[FunctionName].tex` 和 `[ProjectName]/doc/[FunctionName]/[FunctionName].pdf`）
+- [ ] **doc/ 目录自动创建**：输出前确保对应的 `[ProjectName]/doc/[FunctionName]/` 目录已存在
+- [ ] **.tex 和 .pdf 均位于 doc/ 下的模块子目录中**：PDF 文件与 .tex 在同一 `[ProjectName]/doc/[FunctionName]/` 目录中
 - [ ] **页眉、页脚、页码正确生成**
 
 ---

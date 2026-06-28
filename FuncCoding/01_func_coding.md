@@ -41,9 +41,9 @@
    * 输入、输出、参数、状态类型必须以 `Input`、`Output`、`Param`、`State` 结构体层面显式表达。
 
 3. **物理文件结构与命名对应**
-   * 头文件、源文件、测试文件分开在 `include/cpp/`、`src/cpp/`、`tests/cppTest/` 等目录下存放，文件名与函数名一一对应。
+   * 头文件、源文件、测试文件分开在 `[ProjectName]/include/func/`、`[ProjectName]/src/func/`、`[ProjectName]/tests/funcTest/` 等目录下存放，文件名与函数名一一对应。
    * **严禁在一个文件内包含多个函数（包括定义与声明）**。每个函数必须对应独立的 `.cpp` 源文件，并且每个 `.cpp` 源文件有且仅有一个与之对应的独立 `.hpp` 头文件，文件名必须与该函数名完全一致。
-   * 测试相关文件统一放在 `tests/cppTest/` 目录下；编译输出放在 `build/` 目录下。
+   * 测试相关文件统一放在 `[ProjectName]/tests/funcTest/` 目录下；编译输出放在 `[ProjectName]/build/` 目录下。
 
 4. **模块化与分层**
    * 结构必须清晰，代码库应拆分为**共性数学库**和按物理文件夹/业务划开的**分文件夹业务库**（如决策库、控制器库等）。
@@ -110,25 +110,26 @@
 
 ### 物理目录结构规范
 ```
-project_root/
-├── include/              # 头文件
-│   ├── cpp/              # 普通 C++ 头文件
-│   └── mbd/              # MBD FuncModule 架构头文件
-├── src/                  # 源文件
-│   ├── cpp/              # 普通 C++ 源代码（One Function Per File）
-│   └── mbd/              # MBD FuncModule 架构代码
-├── ref/                  # 参考资料目录（存放与该模块对应的参考资料，若无则留空）
-├── tests/                # 测试相关文件（与 src 同级）
-│   ├── cppTest/          # C++ 测试相关文件
-│   │   ├── unit/         # 函数级单元测试代码和用例数据（按函数名建子目录）
-│   │   │   └── [FunctionName]/
-│   │   │       └── output/   # 可视化输出子目录（存放绘图脚本与结果图表）
-│   │   ├── verify/       # 程序验证结果
-│   │   └── Integration/  # 集成测试目录
-│   └── mbdTest/          # MBD 测试相关文件
-├── models/               # MBD 拓扑蓝图（仅 MBD 模块）
-├── build/                # 编译输出目录（与 src 同级）
-└── CMakeLists.txt        # 构建配置（含测试目标）
+[ProjectName]/            # 大组件/大元件独立工程文件夹（如 KalmanFilter/、PIDController/）
+├── CMakeLists.txt        # 针对当前大组件的独立 CMake 构建文件
+├── include/              # 头文件目录
+│   ├── func/              # 普通 C++ 头文件（一函数一头文件，无子目录，如 matrixMultiply.hpp）
+│   └── mbd/              # MBD FuncModule 架构头文件（一类一头文件，无子目录，如 MatrixMultiply.hpp）
+├── src/                  # 源文件目录
+│   ├── func/              # 普通 C++ 源代码（一函数一文件，无子目录，如 matrixMultiply.cpp）
+│   └── mbd/              # MBD FuncModule 架构代码（一类一文件，无子目录，如 MatrixMultiply.cpp）
+├── models/               # MBD 拓扑蓝图（仅包含当前大组件的拓扑 JSON，无子目录）
+│   └── [ProjectName].json
+├── ref/                  # 参考资料目录（存放与该大组件相关的参考资料，若无则留空）
+├── build/                # 当前大组件的独立编译输出目录
+└── tests/                # 测试相关文件
+    ├── funcTest/          # C++ 测试结果
+    │   ├── unit/         # 单元测试代码和用例数据（按具体子函数名建子目录）
+    │   │   └── [FunctionName]/
+    │   │       └── output/ # 可视化输出子目录（存放绘图脚本与结果图表）
+    │   ├── verify/       # 程序验证结果（包含 [FunctionName]_verify.txt）
+    │   └── Integration/  # 集成测试目录
+    └── mbdTest/          # MBD 测试结果
 ```
 
 ## 三、严格的代码健壮性与静态单赋值（SSA）规范
@@ -192,7 +193,7 @@ project_root/
 4. 按语义识别输入、输出、参数、状态和单次调用局部变量。
 5. 将业务 `class` 拆解为结构体和独立函数。
 6. 按物理或数学语义拆分核心算法函数。
-7. 生成 `include/`、`src/`、`CMakeLists.txt`、`Readme.md`。
+7. 生成 `[ProjectName]/include/`、`[ProjectName]/src/`、`[ProjectName]/CMakeLists.txt`、`[ProjectName]/Readme.md`。
 8. 运行 CMake 配置和编译验证。
 
 ## 七、最终检查清单
@@ -202,8 +203,8 @@ project_root/
 - [ ] 输入目录由用户显式指定。
 - [ ] 输入目录真实存在、可访问、可列举。
 - [ ] 输入目录未被修改。
-- [ ] 输出位于项目根目录。
-- [ ] 输出包含 `doc/`、`include/`、`src/`、`tests/`、`ref/`、`CMakeLists.txt` 和 `Readme.md`。
+- [ ] 输出位于独立的组件工程目录 `[ProjectName]/`。
+- [ ] 输出包含 `[ProjectName]/doc/`、`[ProjectName]/include/`、`[ProjectName]/src/`、`[ProjectName]/tests/`、`[ProjectName]/ref/`、`[ProjectName]/CMakeLists.txt` 和 `[ProjectName]/Readme.md`。
 - [ ] 已过滤生成文件、协议文件、构建产物和非业务源码。
 - [ ] 过滤后仍存在可改写业务源码。
 - [ ] 输出中无业务 `class` 作为建模主体。

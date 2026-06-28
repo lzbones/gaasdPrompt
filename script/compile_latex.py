@@ -4,9 +4,9 @@ LaTeX to PDF 编译与自动修正、清理脚本
 使用方法：python <PromptDir>/script/compile_latex.py [tex_file.tex] [output_dir]
 
 # 根据 C/C++ 源代码路径自动映射到 doc/ 目录：
-#   - src/cpp/[FunctionName].cpp  →  doc/[FunctionName]/[FunctionName].tex
-#   - src/mbd/[ModuleName].cpp    →  doc/[ModuleName]/[ModuleName].tex
-#   - include/cpp/[FunctionName].hpp  →  doc/[FunctionName]/[FunctionName].tex
+#   - [ProjectName]/src/func/[FunctionName].cpp  →  [ProjectName]/doc/[FunctionName]/[FunctionName].tex
+#   - [ProjectName]/src/mbd/[SubModuleName].cpp  →  [ProjectName]/doc/[SubModuleName]/[SubModuleName].tex
+#   - [ProjectName]/include/func/[FunctionName].hpp  →  [ProjectName]/doc/[FunctionName]/[FunctionName].tex
 """
 
 import subprocess
@@ -17,14 +17,24 @@ from pathlib import Path
 
 def src_to_doc_path(src_path: str, doc_root: str = "doc") -> str:
     """
-    根据“一函数一设计文档目录”规范，将 src/ 或 include/ 下的源代码路径（如 src/cpp/[FunctionName].cpp）
-    直接映射到 doc/[FunctionName]/[FunctionName].tex 路径。
+    根据组件工程物理隔离规范，将 [ProjectName]/src/func/[FunctionName].cpp
+    直接映射到 [ProjectName]/doc/[FunctionName]/[FunctionName].tex 路径。
     """
     p = Path(src_path)
     if doc_root in p.parts and p.suffix == '.tex':
         return str(p)
     base_name = p.stem
-    return str(Path(doc_root, base_name, f"{base_name}.tex"))
+    parts = p.parts
+    idx = -1
+    for name in ['src', 'include', 'doc']:
+        if name in parts:
+            idx = parts.index(name)
+            break
+    if idx != -1:
+        proj_prefix = Path(*parts[:idx])
+    else:
+        proj_prefix = Path(".")
+    return str(proj_prefix / doc_root / base_name / f"{base_name}.tex")
 
 
 def fix_tex_titles_in_file(tex_path: str):

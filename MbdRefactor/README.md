@@ -49,9 +49,9 @@ void Xxxx::run(const Input &input, Output &output) {
 ```
 
 ### 输出产物
-- `include/mbd/[ModuleName].hpp` - Traits 五元结构体和类声明
-- `src/mbd/[ModuleName].cpp` - run() 等算法实现
-- `models/[ModuleName].json` - （仅复合模块）图形化拓扑蓝图
+- `[ProjectName]/include/mbd/[ModuleName].hpp` - Traits 五元结构体和类声明
+- `[ProjectName]/src/mbd/[ModuleName].cpp` - run() 等算法实现
+- `[ProjectName]/models/[ProjectName].json` - （仅大组件/复合模块）图形化拓扑蓝图
 
 ---
 
@@ -76,7 +76,7 @@ void Xxxx::run(const Input &input, Output &output) {
 
 ### 输出产物
 ```
-tests/mbdTest/
+[ProjectName]/tests/mbdTest/
 ├── unit/                   # Traits 级单元测试代码和用例数据
 │   ├── [Module]_test.cpp
 │   └── [Module]_cases.json
@@ -88,9 +88,9 @@ tests/mbdTest/
     └── [Module]_response.png
 
 源代码位置：
-- src/mbd/[ModuleName].cpp      # 源文件
-- include/mbd/[ModuleName].hpp  # 头文件
-- models/[ModuleName].json      # MBD 拓扑蓝图（仅复合模块）
+- [ProjectName]/src/mbd/[ModuleName].cpp      # 源文件
+- [ProjectName]/include/mbd/[ModuleName].hpp  # 头文件
+- [ProjectName]/models/[ProjectName].json      # MBD 拓扑蓝图（仅复合模块）
 ```
 
 ---
@@ -98,4 +98,4 @@ tests/mbdTest/
 ## 🔗 相关链接
 
 - **主入口**: `../00_gaasdPrompt.md` - 全流程编排 Prompt（总调度入口）
-- **上一步**: `../CppDesign/03_design_doc_gen.md` - 设计文档生成
+- **上一步**: `../FuncDesign/03_design_doc_gen.md` - 设计文档生成

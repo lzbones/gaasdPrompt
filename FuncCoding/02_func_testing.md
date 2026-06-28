@@ -43,12 +43,12 @@
 
 ### 1. 程序验证（Verify）- 新增步骤
 - **执行时机**：在正式测试之前进行
-- **验证内容**：验证改写的代码是否符合 Step 01（`CppCoding/01_cpp_coding.md`）中定义的面向过程规范要求
-- **输出产物**：验证报告保存到 `tests/cppTest/verify/[FunctionName]_verify.txt`
+- **验证内容**：验证改写的代码是否符合 Step 01（`FuncCoding/01_func_coding.md`）中定义的面向过程规范要求
+- **输出产物**：验证报告保存到 `[ProjectName]/tests/funcTest/verify/[FunctionName]_verify.txt`
 
 ### 2. C++ 代码目录规范
-- **头文件位置**: `include/cpp/[FunctionName].hpp`
-- **源文件位置**: `src/cpp/[FunctionName].cpp`
+- **头文件位置**: `[ProjectName]/include/func/[FunctionName].hpp`
+- **源文件位置**: `[ProjectName]/src/func/[FunctionName].cpp`
 
 ### 2. 验证检查清单（Checklist）
 在生成验证报告时，必须逐项检查以下规范符合性：
@@ -81,7 +81,7 @@
 - [ ] **无幻数**：未使用魔法数字（除公式常数外）
 
 ### 2. 函数级单元测试（Unit Test）
-- **一对一原则**：每个源文件（`src/cpp/[FunctionName].cpp`）对应一个测试文件（`tests/cppTest/unit/[FunctionName]/[FunctionName]_test.cpp`）。
+- **一对一原则**：每个源文件（`[ProjectName]/src/func/[FunctionName].cpp`）对应一个测试文件（`[ProjectName]/tests/funcTest/unit/[FunctionName]/[FunctionName]_test.cpp`）。
 - **测试覆盖要求**：每个函数的所有分支路径必须有对应的测试用例。
 - **断言验证**：使用 `assert()` 或测试框架的断言宏验证输出符合预期。
 
@@ -97,16 +97,18 @@
 
 ### 1. 物理目录结构
 ```
-project_root/
-├── include/                          # 头文件（扁平化存放）
-│   ├── cpp/                          # 普通 C++ 头文件（无子目录）
-│   └── mbd/                          # MBD FuncModule 架构头文件（无子目录）
-├── src/                              # 源文件（扁平化存放）
-│   ├── cpp/                          # 普通 C++ 源代码（无子目录）
-│   └── mbd/                          # MBD FuncModule 架构代码（无子目录）
-├── tests/                            # 测试相关文件（与 src 同级）
-│   ├── cppTest/                      # C++ 测试结果
-│   │   ├── unit/                     # 函数级单元测试代码和用例数据（按函数名建子目录）
+[ProjectName]/                        # 大组件/大元件独立工程文件夹（如 KalmanFilter/、PIDController/）
+├── CMakeLists.txt                    # 构建配置（含测试目标）
+├── include/                          # 头文件（扁平化存放，无子目录）
+│   ├── func/                          # 普通 C++ 头文件（如 matrixMultiply.hpp）
+│   └── mbd/                          # MBD FuncModule 架构头文件（如 MatrixMultiply.hpp）
+├── src/                              # 源文件（扁平化存放，无子目录）
+│   ├── func/                          # 普通 C++ 源代码（如 matrixMultiply.cpp）
+│   └── mbd/                          # MBD FuncModule 架构代码（如 MatrixMultiply.cpp）
+├── build/                            # 独立的编译输出目录
+├── tests/                            # 测试相关文件
+│   ├── funcTest/                      # C++ 测试结果
+│   │   ├── unit/                     # 函数级单元测试代码和用例数据（按具体子函数名建子目录）
 │   │   │   └── [FunctionName]/
 │   │   │       ├── [FunctionName]_test.cpp   # 单元测试代码
 │   │   │       ├── [FunctionName]_cases.json # 测试用例数据（JSON 格式）
@@ -117,22 +119,20 @@ project_root/
 │   │   │   ├── [FunctionName]_verify.txt       # 验证报告
 │   │   │   └── coding_standard_check.txt       # 代码规范检查清单
 │   │   └── Integration/              # 集成测试目录
-│   └── mbdTest/                    # MBD 测试相关文件（结构见 ../MbdRefactor/05_mbd_testing.md）
-├── build/                          # 编译输出目录（与 src 同级）
-└── CMakeLists.txt                  # 构建配置（含测试目标）
+│   └── mbdTest/                      # MBD 测试相关文件（结构见 ../MbdRefactor/05_mbd_testing.md）
 ```
 
 ### 2. 测试流程说明
-1. **验证阶段 (verify/)**：在测试之前，先对改写的程序进行验证，检查是否符合 Step 01（`CppCoding/01_cpp_coding.md`）中定义的面向过程规范要求。
-2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据。**目录结构与可视化要求**：每个模块都必须进行测试，且在 `unit/` 目录下必须先按函数名创建独立的子目录（如 `unit/[FunctionName]/`），然后再将对应的测试代码、测试用例放入该子目录下。此外，每个单元测试目录下必须建立 `output/` 子目录（如 `unit/[FunctionName]/output/`），用于存放该单元测试对应的绘图 Python 程序及其输出的图表。
+1. **验证阶段 (verify/)**：在测试之前，先对改写的程序进行验证，检查是否符合 Step 01（`FuncCoding/01_func_coding.md`）中定义的面向过程规范要求。
+2. **单元测试阶段 (unit/)**：只进行模块的单元测试，包含测试代码和测试用例数据。**目录结构与可视化要求**：每个模块都必须进行测试，且在 `[ProjectName]/tests/funcTest/unit/` 目录下必须先按函数名创建独立的子目录（如 `unit/[FunctionName]/`），然后再将对应的测试代码、测试用例放入该子目录下。此外，每个单元测试目录下必须建立 `output/` 子目录（如 `unit/[FunctionName]/output/`），用于存放该单元测试对应的绘图 Python 程序及其输出的图表。
 3. **集成测试阶段 (Integration/)**：集成测试及其输出保存在此目录，代替原本的顶层 output 目录。
 
-### 3. 验证报告模板（tests/cppTest/verify/[FunctionName]_verify.txt）
+### 3. 验证报告模板（[ProjectName]/tests/funcTest/verify/[FunctionName]_verify.txt）
 ```
 ═══════════════════════════════════════
   [FunctionName] 代码规范验证报告
 ═══════════════════════════════════════
-验证依据：CppCoding/01_cpp_coding.md - C++ 面向过程编程规范
+验证依据：FuncCoding/01_func_coding.md - C++ 面向过程编程规范
 
 【代码结构验证】
 [ ] 面向过程风格：未使用类（class）
@@ -166,7 +166,7 @@ project_root/
 ```
 
 ### 3. 测试用例 JSON 格式
-每个函数/模块的测试用例必须保存为结构化的 JSON 文件，存放在 `tests/cppTest/unit/[FunctionName]/[FunctionName]_cases.json`：
+每个函数/模块的测试用例必须保存为结构化的 JSON 文件，存放在 `[ProjectName]/tests/funcTest/unit/[FunctionName]/[FunctionName]_cases.json`：
 
 ```json
 {
@@ -210,7 +210,7 @@ project_root/
  * @file [FunctionName]_test.cpp
  * @brief [FunctionName] 函数的单元测试
  * 
- * 测试用例来源：tests/cppTest/unit/[FunctionName]/[FunctionName]_cases.json
+ * 测试用例来源：[ProjectName]/tests/funcTest/unit/[FunctionName]/[FunctionName]_cases.json
  */
 
 #include <iostream>
@@ -277,7 +277,7 @@ int main() {
 
 > [!IMPORTANT]
 > **【源文件注册与编译要求（CRITICAL）】**：
-> 当您在工程中新增或改写了 C++ 算法源文件（例如新建了 `src/cpp/matrixAdd.cpp`），**必须同步更新项目根目录下的 `CMakeLists.txt`**。请确保将新生成的源文件注册进对应的静态库目标（如 `${PROJECT_NAME}_lib`）的源文件列表中（或通过模板自动列入），否则集成测试在链接时会报 `undefined reference` 未定义符号错误。
+> 当您在工程中新增或改写了 C++ 算法源文件（例如新建了 `[ProjectName]/src/func/matrixAdd.cpp`），**必须同步更新大组件工程根目录下的 `CMakeLists.txt`**。请确保将新生成的源文件注册进对应的静态库目标（如 `${PROJECT_NAME}_lib`）的源文件列表中（或通过模板自动列入），否则集成测试在链接时会报 `undefined reference` 未定义符号错误。
 
 ```cmake
 # 强制限制 C++20 标准
@@ -287,17 +287,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 【重要：避免 macOS 大小写不敏感冲突】
 # 严禁使用全局 include_directories() 混合包含路径。
 # 必须使用 target_include_directories() 针对不同目标隔离包含路径：
-# 普通 C++ 测试与库目标仅包含 include/cpp，不得包含 include/mbd！
+# 普通 C++ 测试与库目标仅包含 include/func，不得包含 include/mbd！
 
 enable_testing()
 
 # 单元测试目标
-add_executable(test_calculateAcceleration tests/cppTest/unit/calculateAcceleration/calculateAcceleration_test.cpp)
+add_executable(test_calculateAcceleration tests/funcTest/unit/calculateAcceleration/calculateAcceleration_test.cpp)
 target_link_libraries(test_calculateAcceleration PRIVATE ${PROJECT_NAME}_lib)
 add_test(NAME Unit_CalculateAcceleration COMMAND test_calculateAcceleration)
 
 # 集成测试目标
-add_executable(test_physics_module tests/cppTest/Integration/test_physics_module.cpp)
+add_executable(test_physics_module tests/funcTest/Integration/test_physics_module.cpp)
 add_test(NAME Integration_PhysicsModule COMMAND test_physics_module)
 
 # 自定义测试目标：运行所有测试
@@ -312,10 +312,12 @@ add_custom_target(run_all_tests
 
 ### 1. 分步测试命令
 ```bash
+# 运行前需进入当前组件所在的文件夹，例如: cd [ProjectName]
+
 # Step 0: 程序验证（在正式测试前进行）
-mkdir -p tests/cppTest/verify
-g++ -std=c++20 -fsyntax-only -Iinclude/cpp src/cpp/[FunctionName].cpp > tests/cppTest/verify/[FunctionName]_syntax.txt 2>&1
-g++ -std=c++20 -c -Iinclude/cpp src/cpp/[FunctionName].cpp -o /tmp/[FunctionName].o > tests/cppTest/verify/[FunctionName]_compile.txt 2>&1
+mkdir -p tests/funcTest/verify
+g++ -std=c++20 -fsyntax-only -Iinclude/func src/func/[FunctionName].cpp > tests/funcTest/verify/[FunctionName]_syntax.txt 2>&1
+g++ -std=c++20 -c -Iinclude/func src/func/[FunctionName].cpp -o /tmp/[FunctionName].o > tests/funcTest/verify/[FunctionName]_compile.txt 2>&1
 
 # Step 1: 编译项目（含测试目标）
 cmake -DBUILD_TESTING=ON -B build
@@ -328,7 +330,7 @@ cd build && ctest -R Unit_ --output-on-failure
 cd build && ctest -R Integration_ --output-on-failure
 
 # Step 4: 生成详细测试报告
-cd build && ctest --output-on-failure --verbose > ../tests/cppTest/Integration/$(date +%Y%m%d_%H%M%S)_report.txt
+cd build && ctest --output-on-failure --verbose > ../tests/funcTest/Integration/$(date +%Y%m%d_%H%M%S)_report.txt
 ```
 
 ### 2. 测试覆盖率要求
@@ -357,7 +359,7 @@ cd build && ctest --output-on-failure --verbose > ../tests/cppTest/Integration/$
   ```
 
 ### 3. 可视化输出规范补充
-- **README 引用路径**：如 `tests/cppTest/unit/[FunctionName]/output/simulation_plot.png`（相对路径）
+- **README 引用路径**：如 `[ProjectName]/tests/funcTest/unit/[FunctionName]/output/simulation_plot.png`（相对路径，基于项目根目录）
 
 ### 4. Python 绘图脚本环境约束
 所有用于测试结果可视化的 Python 脚本必须遵循以下规范：
@@ -405,7 +407,7 @@ def load_test_cases(json_path):
 def plot_comparison(test_data, output_dir=None):
     # 每一个模块的测试绘图结果保存在该模块单元测试下的 output/ 子文件夹中
     if output_dir is None:
-        output_dir = os.path.join('tests/cppTest/unit', test_data['function_name'], 'output')
+        output_dir = os.path.join('tests/funcTest/unit', test_data['function_name'], 'output')  # 注意：在 [ProjectName] 目录下运行，故使用相对路径
     os.makedirs(output_dir, exist_ok=True)
     
     # 提取数据
@@ -424,7 +426,7 @@ def plot_comparison(test_data, output_dir=None):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 2:
-        print("Usage: python plot_tests.py tests/cppTest/unit/[function]/[function]_cases.json")
+        print("Usage: python plot_tests.py tests/funcTest/unit/[FunctionName]/[FunctionName]_cases.json")
         sys.exit(1)
     
     test_data = load_test_cases(sys.argv[1])
